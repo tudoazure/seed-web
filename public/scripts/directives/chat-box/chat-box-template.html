@@ -33,35 +33,37 @@
 </div> -->
 <div style="float:right">
 	<div class="chat-wrapper" style=" height: 561px;">
-		<div class="chat">
+		<div class="chat" ng-show="!collapse">
 		    <div class="chatheader">Baragin with CFashions
 		    	<i class="fa fa-times" style="float:right;"></i>
-		    	<i class="fa fa-minus minus" style="float:right;"></i>
+		    	<i class="fa fa-minus minus" style="float:right;" ng-click="minimize()"></i>
 		    </div>
 		    <div class="productHeader">
-		    	<img ng-src=""></img>
-		    	| {{product.name}}
+		    	<div class="imgDiv fl">
+		    		<img class="image" ng-src="{{product.PRDCNTXT.image_url}}"></img>
+		    	
+		    	</div>
+		    	<div class="name fr" align="left">
+		    		{{product.PRDCNTXT.description}}
+		    	</div>
 		    </div>
-		    <div class="text">
+		    <div class="text clear" >
 		    	<div class='bubble fr reporter bgblue ' ng-repeat="message in chatData.messages" ng-class="chatData.user == message.sender ? 'user-mesg1' : 'bubble--alt agent-mesg1'">
 		    		<div class='chat-name'>{{message.txt}}</div>
 		    	</div>
-		    	<!-- <div class='bubble fr reporter bgblue bubble--alt agent-mesg1'>
-		    		<div class='chat-name'>Text 2</div>
-		    	</div>
-		    	<div class='bubble fr reporter bgblue user-mesg1'>
-		    		<div class='chat-name'>Text 3</div>
-		    	</div>
-		    	<div class='bubble fr reporter bgblue bubble--alt agent-mesg1'>
-		    		<div class='chat-name'>Text 2</div>
-		    	</div>
-		    	<div class='bubble fr reporter bgblue bubble--alt agent-mesg1'>
-		    		<div class='chat-name'>Text 2</div>
-		    	</div> -->
 		    </div>
 		    <div class="chatbox">
 		    	<textarea type="text" placeholder="Send a message"  ng-enter="submitMessage()" ng-model="userMessage" ng-focus="setFocus()" ng-disabled="chatData.status =='closed'" class="textArea"></textarea>
 		    </div>
 		</div>
+		<div class=" activeChat chat" ng-show="collapse">
+			<div class="chatheader h38 p3">
+					<img class="image  fl" ng-src="{{product.PRDCNTXT.image_url}}"></img>
+				<div class="name fl minName">{{product.PRDCNTXT.description}}</div>
+		    	<i class="fa fa-times fr p8"></i>
+		    	<i class="fa fa-minus minus fr p8" ng-click="minimize()"></i>
+			</div>
+			
+	    </div>
 	</div>
 </div>

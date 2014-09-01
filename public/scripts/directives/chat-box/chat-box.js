@@ -8,7 +8,21 @@
         templateUrl: 'scripts/directives/chat-box/chat-box-template.html',
         scope: false,
         link: function(scope, element, attrs) {
-            scope.user = scope.user;
+            if(scope.chatData.messages[0]){
+              try{
+                scope.product = JSON.parse(scope.chatData.messages[0].txt);
+                console.log(scope.product);
+              }
+              catch(exception){
+                
+              }
+              
+            }
+
+            scope.minimize = function(){
+              scope.collapse = !scope.collapse;
+            };
+
             scope.submitMessage = function(){
               if(scope.userMessage.trim() != ""){
                 var timeInMilliSecond = UtilService.getTimeInLongString();
@@ -32,7 +46,7 @@
                 scope.sendMessage(message, jId, timeInMilliSecond, mid);
                 scope.userMessage = "";
               }
-            }
+            };
           }
         }
     }]);
