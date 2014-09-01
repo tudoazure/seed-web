@@ -17,10 +17,6 @@
                 var mid = messageId.toString();
 
                 var message = {
-                  can_forward: "true",
-                  delete_after: "-1",
-                  deleted_on_sender: "false",
-                  flags: 0,
                   id: "",
                   last_ts: strTimeMii.substring(0, 10),
                   mid: mid,
