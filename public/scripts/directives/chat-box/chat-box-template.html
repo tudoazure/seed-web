@@ -26,7 +26,7 @@
 			</ul>
 		</div>
 		<div class="send-message">
-			<textarea></textarea>
+			<textarea type="text" placeholder="Send a message"  ng-enter="submitMessage()" ng-model="userMessage" ng-focus="setFocus()" ng-disabled="chatData.status =='closed'"></textarea>
 		</div>
 	</div>
 	
@@ -38,11 +38,15 @@
 		    	<i class="fa fa-times" style="float:right;"></i>
 		    	<i class="fa fa-minus minus" style="float:right;"></i>
 		    </div>
+		    <div class="productHeader">
+		    	<img ng-src=""></img>
+		    	| {{product.name}}
+		    </div>
 		    <div class="text">
-		    	<div class='bubble fr reporter bgblue user-mesg1' ng-repeat="message in messages">
+		    	<div class='bubble fr reporter bgblue ' ng-repeat="message in chatData.messages" ng-class="chatData.user == message.sender ? 'user-mesg1' : 'bubble--alt agent-mesg1'">
 		    		<div class='chat-name'>{{message.txt}}</div>
 		    	</div>
-		    	<div class='bubble fr reporter bgblue bubble--alt agent-mesg1'>
+		    	<!-- <div class='bubble fr reporter bgblue bubble--alt agent-mesg1'>
 		    		<div class='chat-name'>Text 2</div>
 		    	</div>
 		    	<div class='bubble fr reporter bgblue user-mesg1'>
@@ -53,10 +57,10 @@
 		    	</div>
 		    	<div class='bubble fr reporter bgblue bubble--alt agent-mesg1'>
 		    		<div class='chat-name'>Text 2</div>
-		    	</div>
+		    	</div> -->
 		    </div>
 		    <div class="chatbox">
-		    	<textarea placeholder="send message"></textarea>
+		    	<textarea type="text" placeholder="Send a message"  ng-enter="submitMessage()" ng-model="userMessage" ng-focus="setFocus()" ng-disabled="chatData.status =='closed'" class="textArea"></textarea>
 		    </div>
 		</div>
 	</div>
