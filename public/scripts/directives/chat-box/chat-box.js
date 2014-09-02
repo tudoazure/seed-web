@@ -1,8 +1,8 @@
 (function (angular){
   'use strict';
   angular.module('PaytmIM')
-    .directive('chatBox', ['$rootScope', '$timeout', 'UtilService',
-        function($rootScope, $timeout, UtilService) {
+    .directive('chatBox', ['$rootScope', '$timeout', 'UtilService', '$window',
+        function($rootScope, $timeout, UtilService, $window) {
       return {
         restrict: 'EA',
         templateUrl: 'scripts/directives/chat-box/chat-box-template.html',
@@ -19,6 +19,15 @@
               
             }
 
+            var topHeight = ($window.innerHeight -310) + "px";
+            element.find(".chat").css('top', topHeight);
+            // scope.$watch(function(){
+            //      return $window.innerHeight;
+            //   }, function(value) {
+            //     alert(value);
+            //      console.log('height', value);
+            // });
+
             scope.minimize = function(){
               scope.collapse = !scope.collapse;
             };
@@ -29,6 +38,7 @@
                 scope.userMessage = body;
                 scope.submitMessage(true);
                 scope.chatData.status = 'closed';
+                scope.isClosed = !scope.isClosed;
             };
 
             scope.submitMessage = function(isCloseMessage){

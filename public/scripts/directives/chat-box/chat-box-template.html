@@ -1,13 +1,14 @@
-<div style="float:right">
-	<div class="chat-wrapper" style=" height: 561px;">
+
+<div class="chat-wrapper" style="height:516px;" ng-show="!isClosed">
+	<!-- <div  style=""> -->
 		<div class="chat" ng-show="!collapse">
-		    <div class="chatheader">Baragin with {{product.PRDCNTXT.name}}
+		    <div class="chatheader">Baragin with  {{product.PRDCNTXT.name}}
 		    	<i class="fa fa-times" style="float:right;" ng-click="closeChat()"></i>
 		    	<i class="fa fa-minus minus" style="float:right;" ng-click="minimize()"></i>
 		    </div>
 		    <div class="productHeader">
 		    	<div class="imgDiv fl">
-		    		<img class="image" ng-src="{{product.PRDCNTXT.image_url}}"></img>
+		    		<img class="image" ng-src="{{product.PRDCNTXT.image_url}}"/>
 		    	
 		    	</div>
 		    	<div class="name fr" align="left" title="{{product.PRDCNTXT.description}}">
@@ -33,12 +34,12 @@
 		</div>
 		<div class=" activeChat chat" ng-show="collapse">
 			<div class="chatheader h38 p3">
-					<img class="image  fl" ng-src="{{product.PRDCNTXT.image_url}}"></img>
+					<img class="image  fl" ng-src="{{product.PRDCNTXT.image_url}}"/>
 				<div class="name fl minName">{{product.PRDCNTXT.description}}</div>
 		    	<i class="fa fa-times fr p8"></i>
 		    	<i class="fa fa-minus minus fr p8" ng-click="minimize()"></i>
 			</div>
 			
 	    </div>
-	</div>
-</div>
+	<!-- </div> -->
+<!-- </div> -->
