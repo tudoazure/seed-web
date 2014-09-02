@@ -297,6 +297,12 @@ background-image: -webkit-gradient(
 .p8{
 	padding-top: 8px !important;
 }
+.messageTime {
+	margin-right: 10%;
+	float: right;
+	margin-top: -10px;
+	margin-bottom: 10px;
+}
 
 
 

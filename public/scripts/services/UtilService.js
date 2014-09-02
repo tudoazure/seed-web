@@ -211,11 +211,23 @@
 	        var receiverTigoId = inRecieverJID.substring(0, inRecieverJID.lastIndexOf('@'));
 	        var senderTigoId = inSenderJID.substring(0, inSenderJID.lastIndexOf('@'));
 	        var messageobj = {};
+	        var promoMsg = '', compMsg = '';
+	        try{
+	        	promoMsg = JSON.parse(inMessage);
+	        	if(promoMsg.PRMCODE){
+	        		var compMsg = "message:" + promoMsg.PRMCODE.message + "<br/> code: " +promoMsg.PRMCODE.promocode+ " <br/> Qty: " + promoMsg.PRMCODE.minQuantity + "<br/> Validity:" + promoMsg.PRMCODE.validity;
+
+	        		messageobj['isPromoCode'] = true;
+	        	}
+	        }
+	        catch(exception){
+
+	        }
 	        messageobj['sender'] = senderTigoId;
 	        messageobj['receiver'] = receiverTigoId;
 	        messageobj['last_ts'] = inTime;
 	        messageobj['sent_on'] = inTime;
-	        messageobj['txt'] = inMessage;
+	        messageobj['txt'] = messageobj['isPromoCode']  ?  compMsg : inMessage;
 	        messageobj['id'] = "";
 	        messageobj['mid'] = mid;
 	        messageobj['state'] = 0;//0-sending;1-sent;2-Delivered;3-read

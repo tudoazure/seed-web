@@ -1,8 +1,8 @@
 (function (angular){
   'use strict';
   angular.module('PaytmIM')
-    .directive('chatBox', ['$rootScope', '$timeout', 'UtilService', '$window',
-        function($rootScope, $timeout, UtilService, $window) {
+    .directive('chatBox', ['$rootScope', '$timeout', 'UtilService', '$window', '$sce',
+        function($rootScope, $timeout, UtilService, $window, $sce) {
       return {
         restrict: 'EA',
         templateUrl: 'scripts/directives/chat-box/chat-box-template.html',
@@ -18,9 +18,18 @@
               }
               
             }
+            scope.parseDate = function(ts){
+              return UtilService.getLocalTime(ts);
+            };
+
+            scope.setFocus = function(){
+              scope.$emit('Active-chat-Changed', scope.thread);
+            };
 
             var topHeight = ($window.innerHeight -310) + "px";
+            var minTopHeight = ($window.innerHeight -40) +"px";
             element.find(".chat").css('top', topHeight);
+            element.find(".minChat").css('top', minTopHeight);
             // scope.$watch(function(){
             //      return $window.innerHeight;
             //   }, function(value) {
@@ -30,6 +39,10 @@
 
             scope.minimize = function(){
               scope.collapse = !scope.collapse;
+            };
+
+            scope.returnTrustHtml = function(msg){
+              return $sce.trustAsHtml(msg);
             };
 
             scope.closeChat = function(){

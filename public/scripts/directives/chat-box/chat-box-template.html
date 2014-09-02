@@ -1,7 +1,7 @@
 
 <div class="chat-wrapper" style="height:516px;" ng-show="!isClosed">
 	<!-- <div  style=""> -->
-		<div class="chat" ng-show="!collapse">
+		<div class="chat" ng-show="!collapse" ng-click="setFocus()" ng-class="$storage.threads[thread].isActiveChat ? 'activeChat': ''">
 		    <div class="chatheader">Baragin with  {{product.PRDCNTXT.name}}
 		    	<i class="fa fa-times" style="float:right;" ng-click="closeChat()"></i>
 		    	<i class="fa fa-minus minus" style="float:right;" ng-click="minimize()"></i>
@@ -17,22 +17,25 @@
 		    </div>
 		    <div class="text clear" chat-scroll-down>
 		    	<div ng-repeat="message in chatData.messages">
-		    		<div ng-if="!message.isProductDetails && !message.isCloseMessage && !message.isPromoCode" class='bubble fr reporter bgblue' ng-class="chatData.user == message.sender ? 'user-mesg1' : 'bubble--alt agent-mesg1'">
-		    			<div class='chat-name'>{{message.txt}}</div>
+		    		<div ng-if="!message.isProductDetails && !message.isCloseMessage" class='bubble  reporter bgblue' ng-class="chatData.user == message.sender ? 'user-mesg1' : 'bubble--alt agent-mesg1'">
+		    			<div class='chat-name' ng-if='!message.isPromoCode'>{{message.txt}}</div>
+		    			<div ng-if="message.isPromoCode" ng-bind-html="returnTrustHtml(message.txt)"> </div>
 		    		</div>
+		    		<div align="center" class="clear messageTime" ng-if="message.sender != chatData.user" style='font-size:9px' >{{parseDate(message.sent_on)}}</div>
 		    		<div ng-if="message.isCloseMessage">
 		    			<div>You closed the conversation</div>
 		    		</div>
-		    		<div ng-if="message.isPromoCode">
-		    			<div>Promocode message</div>
-		    		</div>
+		    		<a ng-click="applyPromo()" ng-if="message.isPromoCode" style="cursor:pointer;">Apply</a>
+		    		<!-- <div ng-if="message.isPromoCode">
+		    			<div>{{message.txt}}</div>
+		    		</div> -->
 		    	</div>
 		    </div>
 		    <div class="chatbox">
 		    	<textarea type="text" placeholder="Send a message"  ng-enter="submitMessage()" ng-model="userMessage" ng-focus="setFocus()" ng-disabled="chatData.status =='closed'" class="textArea"></textarea>
 		    </div>
 		</div>
-		<div class=" activeChat chat" ng-show="collapse">
+		<div class=" activeChat chat minChat" ng-show="collapse">
 			<div class="chatheader h38 p3">
 					<img class="image  fl" ng-src="{{product.PRDCNTXT.image_url}}"/>
 				<div class="name fl minName">{{product.PRDCNTXT.description}}</div>
