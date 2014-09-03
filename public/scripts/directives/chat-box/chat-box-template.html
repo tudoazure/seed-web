@@ -6,14 +6,26 @@
 		    	<i class="fa fa-times" style="float:right;" ng-click="closeChat()"></i>
 		    	<i class="fa fa-minus minus" style="float:right;" ng-click="minimize()"></i>
 		    </div>
-		    <div class="productHeader">
+		    <div class="productHeader" ng-show="!detailView" ng-click="detailView = !detailView">
 		    	<div class="imgDiv fl">
 		    		<img class="image" ng-src="{{product.PRDCNTXT.image_url}}"/>
 		    	
 		    	</div>
-		    	<div class="name fr" align="left" title="{{product.PRDCNTXT.description}}">
-		    		{{product.PRDCNTXT.description}}
+		    	<div class="name fr" align="left" title="{{product.PRDCNTXT.description}}">			{{product.PRDCNTXT.description}}
 		    	</div>
+		    	<div class="dwnArrow fr"></div>
+		    </div>
+		     <div class="productHeader h60" ng-show="detailView" ng-click="detailView = !detailView">
+		    	<div class="imgDiv fl">
+		    		<img class="image" ng-src="{{product.PRDCNTXT.image_url}}"/>
+		    	
+		    	</div>
+		    	<div class="detail fr" align="left" title="{{product.PRDCNTXT.description}}">			{{product.PRDCNTXT.description}}
+		    			<br/>
+		    			{{product.PRDCNTXT.price}}
+		    	</div>
+		    	<div class="clear"></div>
+		    	<div class="upArrow fr"></div>
 		    </div>
 		    <div class="text clear" chat-scroll-down>
 		    	<div ng-repeat="message in chatData.messages">

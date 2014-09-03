@@ -195,6 +195,7 @@
 		                isCloseMessage : false
 		              }
 		              $scope.threads[threadId].messages.push(message);
+		              $scope.$broadcast('messagesC');
 		              $scope.$storage.threads = $scope.threads;
 		              var jId = $scope.threads[threadId].agent + "@" + Globals.AppConfig.ChatHostURI;
 		              $scope.sendMessage(message, jId, timeInMilliSecond, mid);

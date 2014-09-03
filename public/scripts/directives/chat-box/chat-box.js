@@ -8,16 +8,18 @@
         templateUrl: 'scripts/directives/chat-box/chat-box-template.html',
         scope: false,
         link: function(scope, element, attrs) {
-            if(scope.chatData.messages[0]){
-              try{
-                scope.product = JSON.parse(scope.chatData.messages[0].txt);
-                console.log(scope.product);
+            scope.getProduct = function(){
+              if(scope.chatData.messages[0]){
+                try{
+                  scope.product = JSON.parse(scope.chatData.messages[0].txt);
+                  console.log(scope.product);
+                }
+                catch(exception){}
               }
-              catch(exception){
-                
-              }
-              
-            }
+            };
+
+            scope.getProduct();
+            
             scope.parseDate = function(ts){
               return UtilService.getLocalTime(ts);
             };
@@ -30,6 +32,9 @@
             var minTopHeight = ($window.innerHeight -40) +"px";
             element.find(".chat").css('top', topHeight);
             element.find(".minChat").css('top', minTopHeight);
+            scope.$on('messagesC', function(){
+              scope.getProduct();
+            });
             // scope.$watch(function(){
             //      return $window.innerHeight;
             //   }, function(value) {
