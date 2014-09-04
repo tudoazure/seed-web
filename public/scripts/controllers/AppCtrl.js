@@ -1,8 +1,8 @@
 (function (angular){
 	"use strict;"
 	angular.module('PaytmIM')
-		.controller('AppCtrl', ['$scope', '$rootScope', '$localStorage', '$timeout', 'CoreService', 'ChatServerService', 'UtilService',
-			function ($scope, $rootScope, $localStorage, $timeout, CoreService, ChatServerService, UtilService) {
+		.controller('AppCtrl', ['$scope', '$rootScope', '$localStorage', '$timeout', 'CoreService', 'ChatServerService', 'UtilService', '$window',
+			function ($scope, $rootScope, $localStorage, $timeout, CoreService, ChatServerService, UtilService, $window) {
 				$scope.init = function(){
 					$scope.$storage = $localStorage;
 					if($scope.$storage && $scope.$storage.chatServer && $scope.$storage.threads){
@@ -180,6 +180,7 @@
 						alert('Failure');
 					})
 				};
+				
 
 				$scope.initiateBargain = function(productId){
 					if($scope.presentBargain < Globals.AppConfig.MaxThreads){

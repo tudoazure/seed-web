@@ -12,6 +12,7 @@
               if(scope.chatData.messages[0]){
                 try{
                   scope.product = JSON.parse(scope.chatData.messages[0].txt);
+                  console.log(scope.product)
                 }
                 catch(exception){}
               }
@@ -27,19 +28,36 @@
               scope.$emit('Active-chat-Changed', scope.thread);
             };
 
-            var topHeight = ($window.innerHeight -310) + "px";
-            var minTopHeight = ($window.innerHeight -40) +"px";
-            element.find(".chat").css('top', topHeight);
-            element.find(".minChat").css('top', minTopHeight);
+            var w = angular.element($window);
+            scope.getHeight = function() {
+                return w.innerHeight();
+            };
+            scope.windowHeight = scope.getHeight();
+
+            scope.setWindowTop = function(height){
+               var topHeight = (height -315) + "px";
+              var minTopHeight = (height -38) +"px";
+              element.find(".chat").css('top', topHeight);
+              element.find(".minChat").css('top', minTopHeight);
+            };
+
+            scope.setWindowTop(scope.windowHeight)
+           
+
             scope.$on('messagesC', function(){
               scope.getProduct();
             });
-            // scope.$watch(function(){
-            //      return $window.innerHeight;
-            //   }, function(value) {
-            //     alert(value);
-            //      console.log('height', value);
-            // });
+            
+            
+            scope.$watch(scope.getHeight, function(newValue, oldValue) {
+                scope.windowHeight = newValue;
+                console.log('height', scope.windowHeight);
+                scope.setWindowTop(newValue);
+            });
+
+            w.bind('resize', function () {
+                scope.$apply();
+            });
 
             scope.minimize = function(){
               scope.collapse = !scope.collapse;
