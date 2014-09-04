@@ -78,8 +78,6 @@
 				    $scope.chatSDK.connection.addHandler($scope.chatSDK.ping_handler_readACK, null, "iq", null, "readACK");   
 				    var iq = $iq({type: 'get'}).c('query', {xmlns: 'jabber:iq:roster'});
 				    $scope.chatSDK.connection.send($pres());
-				    // $scope.chatSDK.connection.sendIQ(iq, $scope.chatSDK.on_roster); 
-				    // $scope.chatSDK.write_to_log("IQ for fetching contact information is send : " + iq);
 				    $scope.chatSDK.connection.addHandler($scope.chatSDK.on_message, null, "message", "chat");
 				};
 
@@ -91,7 +89,9 @@
 						if(response && !response.status && response.data){
 						 	$scope.products[productId].agent = response.data.agent;
 						 	$scope.products[productId].status = "open";
-						 	$scope.$storage.products = $scope.products;
+						 	var msg = '{"PRDCNTXT":{"id":"187474","name":"Smartaccy","description":"The Vanca Western Wear Raglan Sleeveless Shirt Poly Georgette Fabric Nylon Lace Yoke Party Wear Casual Shirt Blue (Size-M)","image_url":"http://assets.paytm.com/images/catalog/product/C/CM/CMPLXWSHIRT000TSF1886TVBLLL/0x1280/70/5.jpg","price":"Rs 559","product_url":"https://catalogapidev.paytm.com/v1/mobile/product/188620?resolution=720x128…dentifier=samsung-GT-I9300-353743053543797&client=androidapp&version=4.2.1","first_name":"Anshuman","last_name":"Gothwal","email":"anshuman.gothwal@gmail.com","user_id":"11065317","merchant_id":"20237"}}';
+						 	
+						 	$scope.sendInitialMessage(productId, msg);
 						}
 						
 					}, function failure(error){
@@ -116,6 +116,49 @@
 					else{
 						console.log("Product already exist for bargain");
 					}
+				};
+
+				$scope.sendInitialMessage = function(productId, msgText){
+
+		              var timeInMilliSecond = UtilService.getTimeInLongString();
+		              var strTimeMii = timeInMilliSecond.toString();
+		              var messageId = $scope.chatServer.tegoId  + "-c-" + strTimeMii;
+		              var mid = messageId.toString();
+
+		              var message = {
+		                can_forward: "true",
+		                delete_after: "-1",
+		                deleted_on_sender: "false",
+		                flags: 0,
+		                id: "",
+		                last_ts: strTimeMii.substring(0, 10),
+		                mid: mid,
+		                receiver: $scope.products[productId].agent ,
+		                sender: $scope.chatServer.tegoId,
+		                sent_on: strTimeMii.substring(0, 10),
+		                state: 0,
+		                txt: msgText,
+		                isProductDetails : true,
+		                isPromoCode : false
+		              }
+		              $scope.products[productId].messages.push(message);
+		              $scope.$storage.products = $scope.products;
+		              var jId = $scope.products[productId].agent + "@" + Globals.AppConfig.ChatHostURI;
+		              $scope.sendMessage(message, jId, timeInMilliSecond, mid);
+		        };
+
+		        $scope.sendMessage = function(body, jid, timeInMilliSecond, mid){
+					if(body !== ""){
+			            var message = $msg({to: jid, "type": "chat", "id": mid}).c('body').t(body).up().c('active', {xmlns: "http://jabber.org/protocol/chatstates"}).up()
+			            .c('meta').c('acl', {deleteafter: "-1", canforward: "1", candownload: "1"});
+		             	var to = Strophe.getDomainFromJid($scope.chatSDK.connection.jid);
+             			var ping = $iq({to: to,type: "get",id: "ping1"}).c("ping", {xmlns: "urn:xmpp:ping"});
+             			$scope.chatSDK.connection.send(ping);
+      //        			UtilService.updateMessageStatus(mid, -1, Strophe.getNodeFromJid(jid), timeInMilliSecond);
+      //        			var jid_id = $scope.chatSDK.jid_to_id(jid);
+      //        			var tigo_id = Strophe.getNodeFromJid(jid);
+						// $scope.chatSDK.send_Read_Notification(jid, jid_id, tigo_id);
+			        }
 				};
 
 				$scope.init();

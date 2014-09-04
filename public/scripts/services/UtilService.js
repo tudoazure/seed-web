@@ -1,7 +1,7 @@
 (function (angular){
 	"use strict;"
 
-	angular.module('PaytmIM').factory('UtilService', ['$rootScope', function ($rootScope) {
+	angular.module('PaytmIM').factory('UtilService', ['$rootScope', '$localStorage', function ($rootScope, $localStorage) {
 		var ua = navigator.userAgent.toLowerCase();
 		var keyStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
 		if (ua.indexOf(" chrome/") >= 0 || ua.indexOf(" firefox/") >= 0 || ua.indexOf(' gecko/') >= 0) {
@@ -161,10 +161,8 @@
 	        var messageArray = [];
 	        var offlinemessage;
 	        var midread = new Array();
-	        var MessageList = $rootScope.plustxtcacheobj['message'];
-	        for (var key in MessageList)
-	        {
-	            messageArray = $rootScope.plustxtcacheobj['message'][key];
+	        angular.forEach($localStorage.products, function(value, index){
+		        var messageArray = value.messages;
 	            for (var key1 in messageArray)
 	            {
 	                if (messageArray[key1]['state'] == -1) {      
@@ -175,7 +173,7 @@
 	                    midread[midread.length] = offlinemessage;
 	                }
 	            }
-	        }
+	        })
 	        return midread;
 	    };
 
