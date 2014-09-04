@@ -178,18 +178,16 @@
 	    };
 
 	    var updateMessageStatus = function(inmessageid, instatus, inotherpartytigoid, intime){
-	        var messageArray =  $rootScope.plustxtcacheobj['message'][inotherpartytigoid];
-	        for (var key in messageArray)
-	        {
-	            if (messageArray[key]['mid'] == inmessageid) {
-	                messageArray[key]['state'] = instatus;
-	                messageArray[key]['last_ts'] = intime;
-	            }
-	        }
-	        // messageArray can be undefined after close chat
-	        if(messageArray){
-	        	$rootScope.plustxtcacheobj['message'][inotherpartytigoid] = messageArray;
-	    	}
+	        angular.forEach($localStorage.products, function(value, index){
+		        var messageArray = value.messages;
+		        for (var key in messageArray) {
+		            if (messageArray[key]['mid'] == inmessageid) {
+		                messageArray[key]['state'] = instatus;
+		                messageArray[key]['last_ts'] = intime;
+		                value.messages = messageArray;
+		            }
+		        }
+	        })
 	    };
 
 	    var updateMessageStatusAsRead = function(inotherpartytigoid, intime){

@@ -1,11 +1,10 @@
 (function (angular){
-	"use strict;"
+"use strict;"
+angular.module('PaytmIM').factory('CoreService', [ '$rootScope', 'UtilService', '$localStorage',
+    function ( $rootScope, UtilService, $localStorage ) {
 
-	angular.module('PaytmIM').factory('CoreService', [ '$rootScope', 'UtilService',
-     function ( $rootScope, UtilService ) {
+    var readACKO = [];
 
-		var CoreService;
-		
     var on_Message_Update_Chat = function(response){
       var full_jid = response['full_jid'];
       var composing = response['composing'];
@@ -17,261 +16,217 @@
         isSpecialMessage = response['isSpecialMessage'];
       }
       var jid = Strophe.getBareJidFromJid(full_jid);
-
-
       var jid_id = UtilService.getJidToId(jid);
-
       var MessID='mid-'+messageId;
        if (body) {
         var timeInMilliSeconds = messageId.substr(messageId.lastIndexOf('-') + 1, messageId.length);
         var strTimeMii = timeInMilliSeconds.toString().substring(0, 10);
-        UtilService.addMessage($rootScope.plustxtId, jid, body, strTimeMii, messageId, isSpecialMessage, threadId);
+        UtilService.addMessage($localStorage.chatServer.plustxtId, jid, body, strTimeMii, messageId, isSpecialMessage, threadId);
         //UtilService.updateMessageStatus(messageId, 2, Strophe.getNodeFromJid(jid), UtilService.getTimeInLongString());
       }  
     };
 	
-    var chatSDK = {
-        //it keeps Connection string
-        connection: null,
-        readACKO : [],
-        jid_to_id: function(jid) {
-            return Strophe.getBareJidFromJid(jid)
-                    .replace("@", "-")
-                    .replace(/\./g, "-");
-        },
+    var getChatSDK = function(connection){
 
-        write_to_log: function(message) {
-             console.log(message);
-        },
-
-        // on_roster: function(iq) {
-        //     var JsonResponse = {};
-        //     $(iq).find('item').each(function() {
-        //         var Item = {};
-        //         var jid = $(this).attr('jid');
-        //         Item['plustxtId'] = $(this).attr('jid');
-        //         if($(this).attr('name') === undefined){
-        //           self.guestUserId = self.guestUserId + 1;
-        //           Item['name'] = "Guest User " + self.guestUserId;
-        //         }
-        //         else{
-        //            Item['name'] = $(this).attr('name')
-        //         }
-        //         Item['tegoid'] = Strophe.getNodeFromJid(Item['plustxtId']);
-        //         JsonResponse[jid] = Item;
-        //     });
-        //     $rootScope.chatSDK.connection.addHandler($rootScope.chatSDK.on_presence, null, "presence");
-        //     // Send the presence information
-        //     $rootScope.chatSDK.connection.send($pres());
-        // },
-
-
-        /*
-         function                : on_message()
-         parameters     input    : message stanze
-         parameters     output   : 
-         parameter description   : 
-         */
-        on_message: function(message) {
-            console.log("CoreService @on_message called :");
-            var threadId = $(message).find("thread").text();
-            var body = $(message).find("html > body");
-            console.log("INCOMING MESSAGE", $(message)[0]);
-            if (body.length === 0) {
-                body = $(message).find('body');
-                if (body.length > 0) {
-                    body = body.text().trim();
-                } else {
-                    body = null;
-                }
-            } else {
-                body = body.contents();
-                var span = $("<span></span>");
-                body.each(function() {
-                    if (document.importNode) {
-                        $(document.importNode(this, true)).appendTo(span);
+        var chatSDK = {
+            connection: connection,
+            jid_to_id: function(jid) {
+                return Strophe.getBareJidFromJid(jid).replace("@", "-").replace(/\./g, "-");
+            },
+            
+            on_message: function(message) {
+                console.log("CoreService @on_message called :");
+                var threadId = $(message).find("thread").text();
+                var body = $(message).find("html > body");
+                console.log("INCOMING MESSAGE", $(message)[0]);
+                if (body.length === 0) {
+                    body = $(message).find('body');
+                    if (body.length > 0) {
+                        body = body.text().trim();
                     } else {
-                        span.append(this.xml);
+                        body = null;
                     }
-                });
-                body = span;
-            }
-            console.log("CoreService  @on_message - Message Text :", body);
-            var response = {};
-            response['full_jid'] = $(message).attr('from');
-            response['id'] = $(message).attr('id');
-            response['threadId'] = threadId;
-            var jid = $(message).attr('from');
-            var messageID = $(message).attr('id');
-            response['composing'] = $(message).find('composing');
-            if(body){
-              response['body'] = body.trim();
-            }
-            try{
-              var productDetail = JSON.parse(body);
-              response['isSpecialMessage'] = true;
-            }
-            catch(e){
-              response['isSpecialMessage'] = false;
-            }
-
-            var DeliveryMessgae = messageID.search("-dv-");
-            var readMessageAcknow = messageID.search("-r-");
-            // Message stanze is an acknowledment 
-            var timeInMilliSecond = UtilService.getTimeInLongString()
-            if (DeliveryMessgae != -1) {
-                // code for update/ inform the user regarding delivered or read information
-                var delivered = $(message).find("delivered");
-                try {
-                    var deliveryAckID = $(delivered).text();
-                } catch (err) {
+                } 
+                else {
+                    body = body.contents();
+                    var span = $("<span></span>");
+                    body.each(function() {
+                        if (document.importNode) {
+                            $(document.importNode(this, true)).appendTo(span);
+                        } 
+                        else {
+                            span.append(this.xml);
+                        }
+                    });
+                    body = span;
+                }
+                console.log("CoreService  @on_message - Message Text :", body);
+                var response = {};
+                response['full_jid'] = $(message).attr('from');
+                response['id'] = $(message).attr('id');
+                response['threadId'] = threadId;
+                var jid = $(message).attr('from');
+                var messageID = $(message).attr('id');
+                response['composing'] = $(message).find('composing');
+                if(body){
+                    response['body'] = body.trim();
+                }
+                try{
+                    var productDetail = JSON.parse(body);
+                    response['isSpecialMessage'] = true;
+                }
+                catch(e){
+                    response['isSpecialMessage'] = false;
                 }
 
-                var read = $(message).find("read");
-                try {
-                    var readAckID = $(read).text();
-                } catch (err) {
+                var DeliveryMessgae = messageID.search("-dv-");
+                var readMessageAcknow = messageID.search("-r-");
+                // Message stanze is an acknowledment 
+                var timeInMilliSecond = UtilService.getTimeInLongString()
+                if (DeliveryMessgae != -1) {
+                    // code for update/ inform the user regarding delivered or read information
+                    var delivered = $(message).find("delivered");
+                    try {
+                        var deliveryAckID = $(delivered).text();
+                    } 
+                    catch (err) {
+                    
+                    }
+
+                    var read = $(message).find("read");
+                    try {
+                        var readAckID = $(read).text();
+                    } 
+                    catch (err) {
+                    
+                    }
+                    // Delivery Acknowledgment
+                    if (deliveryAckID){
+                        console.log("@on_message : Status -- DELIVERED From : " + response['full_jid']);
+                        UtilService.updateMessageStatus(deliveryAckID, 2, Strophe.getNodeFromJid(jid), timeInMilliSecond);
+                    }
+                    //read  Acknowledgment
+                    if (readAckID){
+                        console.log("@on_message : Status -- READ From : " + response['full_jid']);
+                        UtilService.updateMessageStatus(readAckID, 3, Strophe.getNodeFromJid(jid), timeInMilliSecond);
+                    }
                 }
-                // Delivery Acknowledgment
-                if (deliveryAckID){
-                  console.log("@on_message : Status -- DELIVERED From : " + response['full_jid']);
-                  UtilService.updateMessageStatus(deliveryAckID, 2, Strophe.getNodeFromJid(jid), timeInMilliSecond);
+                else if(readMessageAcknow != -1){
+                    var read = $(message).find("read");
+                    try {
+                        var readAckID = $(read).text();
+                    } 
+                    catch (err) {
+                    }
+                    if (readAckID){
+                        console.log("@on_message : Status -- READ From : " + response['full_jid']);
+                        UtilService.updateMessageStatus(readAckID, 3, Strophe.getNodeFromJid(jid), timeInMilliSecond);
+                    }
                 }
-                //read  Acknowledgment
-                if (readAckID){
-                  console.log("@on_message : Status -- READ From : " + response['full_jid']);
-                  UtilService.updateMessageStatus(readAckID, 3, Strophe.getNodeFromJid(jid), timeInMilliSecond);
+                else {
+                    console.log("@on_message :New Text Message : " + message.textContent);
+
+                    var strTimeMii = timeInMilliSecond.toString();
+                    var messageId = $localStorage.chatServer.tegoId + "-dv-" + strTimeMii;
+                    var mid = messageId.toString();
+                    // Sending delivery acknowledment back.
+                    var message2 = $msg({to: response['full_jid'], "type": "chat", "id": mid}).c('delivered').t(messageID).up().c('meta');
+                    // $('#mid-'+messageID).html('Delivered&nbsp;');
+                    on_Message_Update_Chat(response);
+                    connection.send(message2);
+                    console.log('@on_message : Delivery Acknowledment Sent ' + message2);
                 }
-                $rootScope.$broadcast("ChatObjectChanged", $rootScope.plustxtcacheobj);
-            }
-            else if(readMessageAcknow != -1){
-                var read = $(message).find("read");
-                try {
-                    var readAckID = $(read).text();
-                } catch (err) {
+                return true;
+            },
+
+            ping_handler : function (iq){
+                console.log('ping_handler Called');
+                var offmessageArray= UtilService.getAllPendingMessages();       
+                var jid;
+                var mid;
+                var body;
+                var timeInMilliSecond;
+                var strTimeMii;
+                var message;
+                if(offmessageArray == null || offmessageArray === undefined ){
+                    console.log("All Pending Messages Count:" + "0");
                 }
-                if (readAckID){
-                  console.log("@on_message : Status -- READ From : " + response['full_jid']);
-                  UtilService.updateMessageStatus(readAckID, 3, Strophe.getNodeFromJid(jid), timeInMilliSecond);
+                else{
+                    console.log("All Pending Messages Count : " + offmessageArray.length);
+                    for (var i=0 ; i < offmessageArray.length ; i++){
+                        console.log('tegoid ' + offmessageArray[i]['tegoid']+ ' mid '+offmessageArray[i]['mid']+ 'body '+ offmessageArray[i]['body'])
+                        jid=offmessageArray[i]['tegoid']+'@' + "chat-staging.paytm.com";
+                        mid=offmessageArray[i]['mid'];
+                        body=offmessageArray[i]['body'];
+
+                        // Thread Id for multithreading
+                        //$localStorage
+                        var thread = "addcfdc"; //$rootScope.plustxtcacheobj.contact[offmessageArray[i]['tegoid']].threadId;
+                        console.log("THREAD : " + thread);
+                        message = $msg({to: jid, "type": "chat", "id": mid}).c('body').t(body).up().c('thread').t(thread).up().c('active', {xmlns: "http://jabber.org/protocol/chatstates"}).up()
+                        .c('request', {xmlns: 'urn:xmpp:receipts'}).up().c('meta').c('acl', {deleteafter: "-1", canforward: "1", candownload: "1"});
+                       connection.send(message);
+                       timeInMilliSecond = UtilService.getTimeInLongString();
+                       strTimeMii = timeInMilliSecond.toString();
+                        //   utility.comn.consoleLogger(' local cache message status upadted from mid '+mid);
+                       UtilService.updateMessageStatus(mid, 0, Strophe.getNodeFromJid(jid), strTimeMii);
+                       // For sending the closed message
+                       if(body == Globals.AppConfig.CloseChatMessage){
+                         $rootScope.$broadcast("Close-User-Chat", Strophe.getNodeFromJid(jid));
+                       }
+                    }
                 }
-                $rootScope.$broadcast("ChatObjectChanged", $rootScope.plustxtcacheobj);
+                return true;
+            },
+
+            send_Read_Notification : function(jid, jid_id, tigo_id){
+                var to = Strophe.getDomainFromJid(connection.jid);
+                var ping = $iq({to:to,type: "get",id: "readACK"}).c("ping", {xmlns: "urn:xmpp:ping"});
+                connection.send(ping);
+                var informationObj={};
+                informationObj['tigoId']=tigo_id;
+                informationObj['timeStamp']= UtilService.getTimeInLongString();
+                informationObj['jid']=jid;
+                informationObj['jid_id']=jid_id;
+                readACKO.push(informationObj);
+            },
+
+            ping_handler_readACK : function (iq){
+                if (readACKO.length > 0 ) {
+                    var infoObjec = readACKO.shift();
+                    var tigo_id = infoObjec['tigoId'];
+                    var timeStamp = infoObjec['timeStamp'];
+                    var jid = infoObjec['jid'];
+                    var jid_id = infoObjec['jid_id'];
+                    var timeInMilliSecond;
+                    var strTimeMii;
+                    var messageId;
+                    var mid;
+                    var midreadArray = UtilService.updateMessageStatusAsRead(tigo_id, timeStamp);
+                    for (var i = 0; i < midreadArray.length; i++) {
+                      timeInMilliSecond = UtilService.getTimeInLongString();
+                      strTimeMii = timeInMilliSecond.toString();
+                      messageId = $localStorage.chatServer.tegoId + "-r-" + strTimeMii;
+                      mid = messageId.toString();
+                      // Create read ack and send the corresoding jabber client/
+                      // Note that since it is an delivery/ read ack , message ID containd -div- attributes
+                      var message2 = $msg({to: jid, "type": "chat", "id": mid}).c('read').t(midreadArray[i]).up().c('meta');
+                      connection.send(message2);
+                      console.log('Read Acknowledgement Sent: ' + message2);
+                    }
+                }
+                return true;
             }
-             else {
-                console.log("@on_message :New Text Message : " + message.textContent);
-
-                var strTimeMii = timeInMilliSecond.toString();
-                var messageId = $rootScope.tigoId + "-dv-" + strTimeMii;
-                var mid = messageId.toString();
-                // Sending delivery acknowledment back.
-                var message2 = $msg({to: response['full_jid'], "type": "chat", "id": mid}).c('delivered').t(messageID).up().c('meta');
-                // $('#mid-'+messageID).html('Delivered&nbsp;');
-                on_Message_Update_Chat(response);
-                $rootScope.chatSDK.connection.send(message2);
-                console.log('@on_message : Delivery Acknowledment Sent ' + message2);
-            }
-            return true;
-        },
-
-       ping_handler : function (iq){
-          console.log('ping_handler Called');
-          var offmessageArray= UtilService.getAllPendingMessages();       
-           var jid;
-           var mid;
-           var body;
-           var timeInMilliSecond;
-           var strTimeMii;
-           var message;
-
-           if(offmessageArray == null || offmessageArray === undefined ){
-                console.log("All Pending Messages Count:" + "0");
-           }
-           else{
-              console.log("All Pending Messages Count : " + offmessageArray.length);
-            for (var i=0 ; i < offmessageArray.length ; i++){
-                console.log('tegoid ' + offmessageArray[i]['tegoid']+ ' mid '+offmessageArray[i]['mid']+ 'body '+ offmessageArray[i]['body'])
-                jid=offmessageArray[i]['tegoid']+'@' + "chat-staging.paytm.com";
-                mid=offmessageArray[i]['mid'];
-                body=offmessageArray[i]['body'];
-
-                // Thread Id for multithreading
-                var thread = $rootScope.plustxtcacheobj.contact[offmessageArray[i]['tegoid']].threadId;
-                console.log("THREAD : " + thread);
-                message = $msg({to: jid, "type": "chat", "id": mid}).c('body').t(body).up().c('thread').t(thread).up().c('active', {xmlns: "http://jabber.org/protocol/chatstates"}).up()
-                .c('request', {xmlns: 'urn:xmpp:receipts'}).up().c('meta').c('acl', {deleteafter: "-1", canforward: "1", candownload: "1"});
-                $rootScope.chatSDK.connection.send(message);
-               timeInMilliSecond = UtilService.getTimeInLongString();
-               strTimeMii = timeInMilliSecond.toString();
-             //   utility.comn.consoleLogger(' local cache message status upadted from mid '+mid);
-               UtilService.updateMessageStatus(mid, 0, Strophe.getNodeFromJid(jid), strTimeMii);
-
-               // For sending the closed message
-               if(body == Globals.AppConfig.CloseChatMessage){
-                 $rootScope.$broadcast("Close-User-Chat", Strophe.getNodeFromJid(jid));
-               }
-            }
-           }
-          return true;
-       },
-        send_ping : function(to){
-          //   utility.comn.consoleLogger('to from send ping'+ to);
-            var ping = $iq({to: to,type: "get",id: "ping1"}).c("ping", {xmlns: "urn:xmpp:ping"});
-             utility.comn.consoleLogger('send_ping Called :' +  "to: " + to );
-            
-           $rootScope.chatSDK.pingRef= setInterval(function (){
-                 $rootScope.chatSDK.connection.send(ping);                
-             },1000);
-            
-       },
-        send_Read_Notification : function(jid, jid_id, tigo_id){
-          var to = Strophe.getDomainFromJid($rootScope.chatSDK.connection.jid);
-          var ping = $iq({to:to,type: "get",id: "readACK"}).c("ping", {xmlns: "urn:xmpp:ping"});
-          $rootScope.chatSDK.connection.send(ping);
-          var informationObj={};
-          informationObj['tigoId']=tigo_id;
-          informationObj['timeStamp']= UtilService.getTimeInLongString();
-          informationObj['jid']=jid;
-          informationObj['jid_id']=jid_id;
-          $rootScope.chatSDK.readACKO.push(informationObj);
-        },
-
-        ping_handler_readACK : function (iq){
-          if($rootScope.chatSDK.kill=="Yes"){
-             return false;
-          }
-          if ($rootScope.chatSDK.readACKO.length > 0 ) {
-          var infoObjec=$rootScope.chatSDK.readACKO.shift();
-          var tigo_id=infoObjec['tigoId'];
-          var timeStamp=infoObjec['timeStamp'];
-          var jid=infoObjec['jid'];
-          var jid_id=infoObjec['jid_id'];
-          var timeInMilliSecond;
-          var strTimeMii;
-          var messageId;
-          var mid;
-          var midreadArray = UtilService.updateMessageStatusAsRead(tigo_id, timeStamp);
-          for (var i = 0; i < midreadArray.length; i++) {
-             //  utility.comn.consoleLogger('value of message id when clicking on left side panel'+midreadArray[i]);
-              timeInMilliSecond = UtilService.getTimeInLongString();
-              strTimeMii = timeInMilliSecond.toString();
-              messageId = $rootScope.tigoId + "-r-" + strTimeMii;
-              mid = messageId.toString();
-              // Create read ack and send the corresoding jabber client/
-              // Note that since it is an delivery/ read ack , message ID containd -div- attributes
-              var message2 = $msg({to: jid, "type": "chat", "id": mid}).c('read').t(midreadArray[i]).up().c('meta');
-              $rootScope.chatSDK.connection.send(message2);
-              console.log('Read Acknowledgement Sent: ' + message2);
-            }
-          }
-          return true;
-        }           
-  };
+        };           
+        return chatSDK;
+    };
 
 
-		CoreService = {
-      		chatSDK: chatSDK,
-      	}
+        CoreService = {
+            chatSDK: getChatSDK
+        }
 
-		return CoreService;
+	   return CoreService;
 	}]);
 })(angular);
 

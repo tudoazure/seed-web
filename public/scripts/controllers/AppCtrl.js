@@ -4,7 +4,7 @@
 		.controller('AppCtrl', ['$scope', '$rootScope', '$localStorage', '$timeout', 'CoreService', 'ChatServerService', 'UtilService',
 			function ($scope, $rootScope, $localStorage, $timeout, CoreService, ChatServerService, UtilService) {
 				$scope.init = function(){
-					$scope.chatSDK = CoreService.chatSDK;
+					// $scope.chatSDK = CoreService.chatSDK;
 					$scope.$storage = $localStorage;
 					$scope.products = $scope.$storage.products ? $scope.$storage.products : {};
 					$scope.chatServer = $scope.$storage.chatServer ? $scope.$storage.chatServer : {};
@@ -44,11 +44,11 @@
 
 				$scope.conectionStateChange = function(connection, status, productId){
 					console.log("StropheStatus : ", status);
-					$scope.chatSDK.connection = connection;
 					switch(status){
 						case Strophe.Status.CONNECTING:
 							break;
 						case Strophe.Status.CONNECTED:
+							$scope.chatSDK = CoreService.chatSDK(connection);
 							$scope.connectedState(productId);
 							break;
 						case Strophe.Status.DISCONNECTING:
@@ -93,6 +93,9 @@
 						 	
 						 	$scope.sendInitialMessage(productId, msg);
 						}
+						else{
+							console.log("No merchant available");
+						}
 						
 					}, function failure(error){
 						alert('Failure');
@@ -136,7 +139,7 @@
 		                receiver: $scope.products[productId].agent ,
 		                sender: $scope.chatServer.tegoId,
 		                sent_on: strTimeMii.substring(0, 10),
-		                state: 0,
+		                state: -1,
 		                txt: msgText,
 		                isProductDetails : true,
 		                isPromoCode : false
