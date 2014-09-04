@@ -4,7 +4,7 @@
 	angular.module('PaytmIM').factory('CoreService', [ '$rootScope', 'UtilService',
      function ( $rootScope, UtilService ) {
 
-		var ChatCoreService;
+		var CoreService;
 		
     var on_Message_Update_Chat = function(response){
       var full_jid = response['full_jid'];
@@ -33,11 +33,7 @@
     var chatSDK = {
         //it keeps Connection string
         connection: null,
-        pingRef : null,
-        PingCount: 0,
-        reLoad: null,
         readACKO : [],
-        kill:"No",
         jid_to_id: function(jid) {
             return Strophe.getBareJidFromJid(jid)
                     .replace("@", "-")
@@ -48,80 +44,28 @@
              console.log(message);
         },
 
-        on_roster: function(iq) {
-            $rootScope.chatSDK.write_to_log('ChatCoreService: on_roster called');
-            var JsonResponse = {};
-            $(iq).find('item').each(function() {
-                var Item = {};
-                var jid = $(this).attr('jid');
-                Item['plustxtId'] = $(this).attr('jid');
-                if($(this).attr('name') === undefined){
-                  self.guestUserId = self.guestUserId + 1;
-                  Item['name'] = "Guest User " + self.guestUserId;
-                }
-                else{
-                   Item['name'] = $(this).attr('name')
-                }
-                Item['tegoid'] = Strophe.getNodeFromJid(Item['plustxtId']);
-                JsonResponse[jid] = Item;
-            });
-            $rootScope.chatSDK.connection.addHandler($rootScope.chatSDK.on_presence, null, "presence");
-            // Send the presence information
-            $rootScope.chatSDK.connection.send($pres());
-        },
+        // on_roster: function(iq) {
+        //     var JsonResponse = {};
+        //     $(iq).find('item').each(function() {
+        //         var Item = {};
+        //         var jid = $(this).attr('jid');
+        //         Item['plustxtId'] = $(this).attr('jid');
+        //         if($(this).attr('name') === undefined){
+        //           self.guestUserId = self.guestUserId + 1;
+        //           Item['name'] = "Guest User " + self.guestUserId;
+        //         }
+        //         else{
+        //            Item['name'] = $(this).attr('name')
+        //         }
+        //         Item['tegoid'] = Strophe.getNodeFromJid(Item['plustxtId']);
+        //         JsonResponse[jid] = Item;
+        //     });
+        //     $rootScope.chatSDK.connection.addHandler($rootScope.chatSDK.on_presence, null, "presence");
+        //     // Send the presence information
+        //     $rootScope.chatSDK.connection.send($pres());
+        // },
 
-        /*
-         function                : presence_value()
-         parameters     input    : html li component
-         parameters     output   : 
-         parameter description   : 
-         
-         function  description   : sort li components
-         
-         */
-        presence_value: function(elem) {
-          if (elem.hasClass('online')) {
-            return 2;
-          } 
-          else if (elem.hasClass('away')) {
-              return 1;
-          }
-          return 0;
-        },
-        /*
-         function                : on_presence()
-         parameters     input    : presence stanze
-         parameters     output   : 
-         parameter description   : 
-         
-         function  description   : This function is the deault handler for presence stanze
-         When a new presence stanze becomes availble, this function will be called .
-         This Function will create JSON Object with attributes available in presence and
-         call UI function on_Presence_Update_Contact for update UI .
-         
-         */
-        on_presence: function(presence) {
 
-            var ptype = $(presence).attr('type');
-            var from = $(presence).attr('from');
-            var show = $(presence).find("show").text();
-            var JsonResponse = {};
-            JsonResponse['jid'] = from;
-            JsonResponse['type'] = ptype;
-            JsonResponse['show'] = show;
-            console.log("ChatCoreService @on_presence", JsonResponse);
-            if(Strophe.getNodeFromJid(from) == $rootScope.tigoId){
-              var resourceId = Strophe.getResourceFromJid(from);
-              if(!$rootScope.resourceId){
-                $rootScope.resourceId = resourceId;
-              }
-              // else if(($rootScope.resourceId == resourceId && ptype=="unavailable")){
-              //   $rootScope.$broadcast("ChatMultipleSession");
-              // }
-            }
-            return true;
-
-        },
         /*
          function                : on_message()
          parameters     input    : message stanze
@@ -129,7 +73,7 @@
          parameter description   : 
          */
         on_message: function(message) {
-            console.log("ChatCoreService @on_message called :");
+            console.log("CoreService @on_message called :");
             var threadId = $(message).find("thread").text();
             var body = $(message).find("html > body");
             console.log("INCOMING MESSAGE", $(message)[0]);
@@ -152,7 +96,7 @@
                 });
                 body = span;
             }
-            console.log("ChatCoreService  @on_message - Message Text :", body);
+            console.log("CoreService  @on_message - Message Text :", body);
             var response = {};
             response['full_jid'] = $(message).attr('from');
             response['id'] = $(message).attr('id');
@@ -230,10 +174,6 @@
 
        ping_handler : function (iq){
           console.log('ping_handler Called');
-         if($rootScope.chatSDK.kill=="Yes"){
-                   return false;
-         }
-          $rootScope.chatSDK.PingCount=0;
           var offmessageArray= UtilService.getAllPendingMessages();       
            var jid;
            var mid;
@@ -327,11 +267,11 @@
   };
 
 
-		ChatCoreService = {
+		CoreService = {
       		chatSDK: chatSDK,
       	}
 
-		return ChatCoreService;
+		return CoreService;
 	}]);
 })(angular);
 

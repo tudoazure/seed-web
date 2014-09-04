@@ -25,7 +25,7 @@
     <script src="scripts/vendor/angular.js"></script>
     <script src="scripts/vendor/angular-resource.js"></script>
     <script src="scripts/vendor/angular-route.js"></script>
-    <script src="scripts/vendor/angular-local-storage.js"></script>
+    <script src="scripts/vendor/ngStorage.min.js"></script>
     <script src="scripts/vendor/angular-cookies.js"></script>
     <script src="scripts/vendor/strophe.js"></script>
     <script src="scripts/vendor/moment.js"></script>
@@ -33,23 +33,27 @@
 
     <script src="scripts/app.js"></script>
     <script src="scripts/controllers/AppCtrl.js"></script>
+
+    <script src="scripts/services/StropheService.js"></script>
+    <script src="scripts/services/ChatServerService.js"></script>
+    <script src="scripts/services/UtilService.js"></script>
 </head>
 
 <body ng-controller="AppCtrl">
     <div class="container">
         <div class="row">
             <div class="col-md-12" align="center" style="margin-top:50px">
-                <button class="btn btn-default">Bargain Product 1</button>
+                <button class="btn btn-default" ng-click="initiateBargain(111)">Bargain Product 1</button>
             </div>
         </div>
         <div class="row">
             <div class="col-md-12" align="center" style="margin-top:50px">
-                <button class="btn btn-default">Bargain Product 2</button>
+                <button class="btn btn-default" ng-click="initiateBargain(222)">Bargain Product 2</button>
             </div>
         </div>
         <div class="row">
             <div class="col-md-12" align="center" style="margin-top:50px">
-                <button class="btn btn-default">Bargain Product 3</button>
+                <button class="btn btn-default" ng-click="initiateBargain(333)">Bargain Product 3</button>
             </div>
         </div>
     </div>

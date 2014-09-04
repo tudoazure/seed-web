@@ -1,6 +1,6 @@
 (function (angular){
 "use strict;"
-	var app = angular.module('PaytmIM', ['ngRoute', 'ngResource', 'LocalStorageModule']);
+	var app = angular.module('PaytmIM', ['ngRoute', 'ngResource', 'ngStorage']);
 	
 	app.config(['$routeProvider', function($routeProvider){
 		$routeProvider
@@ -19,9 +19,5 @@
 
 	app.config(['$resourceProvider', function($resourceProvider){
 	  $resourceProvider.defaults.stripTrailingSlashes = false;
-	}]);
-
-	app.config(['localStorageServiceProvider', function(localStorageServiceProvider){
-	  localStorageServiceProvider.setPrefix('PaytmIM');
 	}]);
 })(angular);
