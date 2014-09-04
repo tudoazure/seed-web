@@ -161,7 +161,7 @@
 	        var messageArray = [];
 	        var offlinemessage;
 	        var midread = new Array();
-	        angular.forEach($localStorage.products, function(value, index){
+	        angular.forEach($localStorage.threads, function(value, index){
 		        var messageArray = value.messages;
 	            for (var key1 in messageArray)
 	            {
@@ -178,7 +178,7 @@
 	    };
 
 	    var updateMessageStatus = function(inmessageid, instatus, inotherpartytigoid, intime){
-	        angular.forEach($localStorage.products, function(value, index){
+	        angular.forEach($localStorage.threads, function(value, index){
 		        var messageArray = value.messages;
 		        for (var key in messageArray) {
 		            if (messageArray[key]['mid'] == inmessageid) {
