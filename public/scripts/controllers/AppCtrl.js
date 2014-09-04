@@ -22,12 +22,11 @@
 					}, function success(response){
 						if(response && !response.status && response.data){
 							$scope.chatServer.tegoId = response.data['tego_id'];
-							$scope.chatServer.sessionid = response.data['session_id'];
+							$scope.chatServer.sessionId = response.data['session_id'];
 							$scope.chatServer.plustxtId = response.data['tego_id'] + "@" + Globals.AppConfig.ChatHostURI;
 							$scope.chatServer.password = response.data['password'] + response.data['tego_id'].substring(0, 3);
 							$scope.chatServer.connected = false;
-							$scope.stropheConnection()
-							$scope.getMerchantAgent(productId);
+							$scope.stropheConnection($scope.chatServer.plustxtId, $scope.chatServer.password, productId);
 						}
 						else{
 						}
@@ -36,20 +35,21 @@
 					})
 				};
 
-				$scope.stropheConnection = function(login, password)){
+				$scope.stropheConnection = function(login, password, productId){
 					var connection = new Strophe.Connection(Globals.AppConfig.StropheConnect);
 					connection.connect(login, password, function (status) {
-						$scope.conectionStateChange(connection, status);
+						$scope.conectionStateChange(connection, status, productId);
 					})
 				};
 
-				$scope.conectionStateChange = function(connection, status){
+				$scope.conectionStateChange = function(connection, status, productId){
+					console.log("StropheStatus : ", status);
 					$scope.chatSDK.connection = connection;
 					switch(status){
 						case Strophe.Status.CONNECTING:
 							break;
 						case Strophe.Status.CONNECTED:
-							$scope.connectedState();
+							$scope.connectedState(productId);
 							break;
 						case Strophe.Status.DISCONNECTING:
 							break;
@@ -65,11 +65,15 @@
 							break;
 						case Strophe.Status.ATTACHED:
 							break;
+					}
 				};
 
-				$scope.connectedState = function(){
+				$scope.connectedState = function(productId){
 					$scope.chatServer.connected = true;
 					$scope.$storage.chatServer = $scope.chatServer;
+					if(productId){
+						$scope.getMerchantAgent(productId);
+					}
 					$scope.chatSDK.connection.addHandler($scope.chatSDK.ping_handler, null, "iq", null, "ping1"); 
 				    $scope.chatSDK.connection.addHandler($scope.chatSDK.ping_handler_readACK, null, "iq", null, "readACK");   
 				    var iq = $iq({type: 'get'}).c('query', {xmlns: 'jabber:iq:roster'});
@@ -80,9 +84,8 @@
 				};
 
 				$scope.getMerchantAgent = function(productId){
-					console.log($scope.$storage);
 					ChatServerService.getAgent.query({
-						session_id : $scope.connection.sessionid,
+						session_id : $scope.chatServer.sessionId,
 						merchant_id : 1
 					}, function success(response){
 						if(response && !response.status && response.data){
@@ -103,7 +106,7 @@
 						$scope.products[productId].threadId = threadId;
 						$scope.products[productId].messages = [];
 						$scope.products[productId].agent = "";
-						if($scope.connection && $scope.connection.connected){
+						if($scope.chatServer && $scope.chatServer.connected){
 							$scope.getMerchantAgent(productId);
 						}
 						else{
