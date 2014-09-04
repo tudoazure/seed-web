@@ -34,7 +34,7 @@
 	visibility: visible;
 	float: right;
   	margin-right: 10px; 
-  	z-index: 50;
+  	z-index: 10;
 
 }
 
@@ -74,7 +74,7 @@ font-size: 10px;
 	padding: .42em 0 0 0;
 	font-size: 80%;
 	/*position: relative;*/
-	height:200px;
+	height:238px;
 }
 .user-mesg1{
 	margin-left: 2%;
@@ -183,6 +183,8 @@ background-image: -webkit-gradient(
 	border:solid 1px #ccc;
 	background-color: #FAFAFA; 
 	padding-right: 5px;
+	position: absolute;
+	z-index: 10;
 }
 .imgDiv{
 	border:solid 1px #ccc;
