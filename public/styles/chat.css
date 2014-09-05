@@ -62,7 +62,8 @@ font-size: 10px;
 }
 
 .title {  background-color: #00B8FF; color: white; }
-.text { padding: 10px;
+.text {
+	padding: 40px 10px 10px 10px;
 	min-height: 50px;
 	/*height: 100px;*/
 	background-color: #fff;
@@ -71,7 +72,7 @@ font-size: 10px;
 	min-height: 40px;
 	border-left: 1px solid #ccc;
 	border-right: 1px solid #ccc;
-	padding: .42em 0 0 0;
+	/*padding: .42em 0 0 0;*/
 	font-size: 80%;
 	/*position: relative;*/
 	height:238px;
