@@ -158,10 +158,7 @@ angular.module('PaytmIM').factory('CoreService', [ '$rootScope', 'UtilService', 
                         jid=offmessageArray[i]['tegoid']+'@' + "chat-staging.paytm.com";
                         mid=offmessageArray[i]['mid'];
                         body=offmessageArray[i]['body'];
-
-                        // Thread Id for multithreading
-                        //$localStorage
-                        var thread = "addcfdc"; //$rootScope.plustxtcacheobj.contact[offmessageArray[i]['tegoid']].threadId;
+                        var thread = offmessageArray[i]['threadId'];
                         console.log("THREAD : " + thread);
                         message = $msg({to: jid, "type": "chat", "id": mid}).c('body').t(body).up().c('thread').t(thread).up().c('active', {xmlns: "http://jabber.org/protocol/chatstates"}).up()
                         .c('request', {xmlns: 'urn:xmpp:receipts'}).up().c('meta').c('acl', {deleteafter: "-1", canforward: "1", candownload: "1"});

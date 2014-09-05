@@ -170,6 +170,7 @@
 	                    offlinemessage['tegoid'] = messageArray[key1]['receiver'];
 	                    offlinemessage['body'] = messageArray[key1]['txt']
 	                    offlinemessage['mid'] = messageArray[key1]['mid'];
+	                    offlinemessage['threadId'] = index;
 	                    midread[midread.length] = offlinemessage;
 	                }
 	            }
@@ -233,86 +234,46 @@
 	    	}
 
 	        
-
-	        if (receiverTigoId == $rootScope.tigoId){
-	            otherpartyid = senderTigoId;
+	        if($localStorage.threads[threadId]){
+	        	$localStorage.threads[threadId].messages.push(messageobj);
 	        }
 	        else{
-	            otherpartyid = receiverTigoId;
+	        	alert("Thread not found");
 	        }
-	        if(isSpecialMessage){
-	        	try{
-	        		var specialMessage = JSON.parse(inMessage);
-	        		if(specialMessage.PRDCNTXT){
-		        		messageobj['isProductDetails'] = true;
-						var productObj ={}
-						productObj.imageUrl = specialMessage.PRDCNTXT.image_url;
-						productObj.description = specialMessage.PRDCNTXT.description;
-						productObj.price = specialMessage.PRDCNTXT.price.replace("Rs" , "").trim();
-						productObj.merchantId = specialMessage.PRDCNTXT.merchant_id;
-						productObj.productId = specialMessage.PRDCNTXT.id;
-						productObj.userId = specialMessage.PRDCNTXT.user_id;
-						productObj.productUrl = specialMessage.PRDCNTXT.product_url;
-						$rootScope.plustxtcacheobj.products[otherpartyid] = productObj;
+	        // if (receiverTigoId == $rootScope.tigoId){
+	        //     otherpartyid = senderTigoId;
+	        // }
+	        // else{
+	        //     otherpartyid = receiverTigoId;
+	        // }
+	     //    if(isSpecialMessage){
+	     //    	try{
+	     //    		var specialMessage = JSON.parse(inMessage);
+	     //    		if(specialMessage.PRDCNTXT){
+		    //     		messageobj['isProductDetails'] = true;
+						// var productObj ={}
+						// productObj.imageUrl = specialMessage.PRDCNTXT.image_url;
+						// productObj.description = specialMessage.PRDCNTXT.description;
+						// productObj.price = specialMessage.PRDCNTXT.price.replace("Rs" , "").trim();
+						// productObj.merchantId = specialMessage.PRDCNTXT.merchant_id;
+						// productObj.productId = specialMessage.PRDCNTXT.id;
+						// productObj.userId = specialMessage.PRDCNTXT.user_id;
+						// productObj.productUrl = specialMessage.PRDCNTXT.product_url;
+						// $rootScope.plustxtcacheobj.products[otherpartyid] = productObj;
 
-						// Assigning ThreadId for a new chat
-						if(!messageobj.threadId){
-							messageobj['threadId'] = productObj.productId + "-" + guid();
-						}
-			        }
-			        else if(specialMessage.CLSCHAT){
-			        	messageobj['isCloseChatMesg'] = true;
-			        }
-	            }
-	            catch(e){
-	            }
-	        }
+						// // Assigning ThreadId for a new chat
+						// if(!messageobj.threadId){
+						// 	messageobj['threadId'] = productObj.productId + "-" + guid();
+						// }
+			   //      }
+			   //      else if(specialMessage.CLSCHAT){
+			   //      	messageobj['isCloseChatMesg'] = true;
+			   //      }
+	     //        }
+	     //        catch(e){
+	     //        }
+	     //    }
 
-	        if ($rootScope.plustxtcacheobj['contact'].hasOwnProperty(otherpartyid))
-	        {
-	        	if(messageobj.isCloseChatMesg){
-	        		$rootScope.plustxtcacheobj.contact[otherpartyid].chatState = "closed";
-	        	}
-	        	if(messageobj.isProductDetails){
-	        		$rootScope.plustxtcacheobj.contact[otherpartyid].chatState = "open";
-	        		$rootScope.plustxtcacheobj.contact[otherpartyid].threadId = messageobj.threadId;
-	        	}
-	        	$rootScope.plustxtcacheobj.contact[otherpartyid].lastActive = getTimeInLongString();
-	        }
-	        else {
-	            $rootScope.usersCount = $rootScope.usersCount + 1;
-	        	var contactObj = {};
-	        	contactObj.name = "Guest " + $rootScope.usersCount;
-	        	contactObj.id   = otherpartyid;
-	        	contactObj.lastActive = getTimeInLongString();
-	        	contactObj.chatState = "open";
-	        	contactObj.threadId = messageobj.threadId;
-	        	$rootScope.plustxtcacheobj['contact'][otherpartyid] = contactObj;
-	        } 
-
-
-
-	        if ($rootScope.plustxtcacheobj['message'].hasOwnProperty(otherpartyid))
-	        {
-	            messagelist = $rootScope.plustxtcacheobj['message'][otherpartyid];
-	            messagelist.push(messageobj)
-	        }
-	        else {
-	            messagelist = [];
-	            messagelist.push(messageobj);
-	        }          
-	        $rootScope.plustxtcacheobj['message'][otherpartyid] = messagelist;
-	        $rootScope.$broadcast("ChatObjectChanged", $rootScope.plustxtcacheobj);
-
-	        var threadId = $rootScope.plustxtcacheobj['contact'][otherpartyid].threadId;
-	        if(messageobj.isProductDetails){
-	        	var totalChats = getTotalActiveChatUsers();
-	        	chatStarted($rootScope.sessionid, otherpartyid, totalChats, threadId);
-	        }
-	        if(messageobj.isCloseChatMesg){
-	        	var totalChats = getTotalActiveChatUsers();
-	        	chatClosed($rootScope.sessionid, otherpartyid, totalChats, threadId);
-	        }
 
 	    };
 
