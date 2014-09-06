@@ -110,7 +110,7 @@ background-image: -webkit-gradient(
 	clear: both;
 	float: left;
 	margin-bottom: 12px;
-	padding: 5px 20px;
+	padding: 5px 10px;
 	position: relative;
 	/*text-shadow: 0 1px 1px rgba(255, 255, 255, 0.7);*/
 	width: auto;
@@ -198,6 +198,9 @@ background-image: -webkit-gradient(
 	width:30px;
 	border-radius: 50%;
 }
+.image:hover { 
+	opacity: 0.3;
+}
 .name{
 	font-size: 11px;
 	font-weight: 500;
@@ -211,6 +214,9 @@ background-image: -webkit-gradient(
 	-webkit-line-clamp: 1;
 	-webkit-box-orient: vertical;
 	line-height: 18px;
+}
+.name:hover{
+	text-decoration: underline;
 }
 .fl{
 	float: left;
@@ -249,6 +255,7 @@ background-image: -webkit-gradient(
 	position: relative;
 	margin-left: 1px;
 	bottom: 13px;
+	padding: 5px;
 }
 .upArrow{
 	background: url(../images/arrow_down.png) no-repeat;
@@ -257,6 +264,7 @@ background-image: -webkit-gradient(
 	position: relative;
 	margin-left: 1px;
 	bottom: 29px;
+	padding: 5px;
 }
 .h60{
 	height: 60px !important;
@@ -276,5 +284,26 @@ background-image: -webkit-gradient(
 	line-height: 18px;*/
 }
 
+.detail:hover{
+	text-decoration: underline;
+}
 
+.pointer {
+	cursor: pointer;
+}
+
+.p60{
+	padding: 62px 10px 10px 10px !important;
+}
+.p0{
+	padding:0px;
+}
+.italic{
+	font-style: italic;
+	color: #2a6496;
+}
+
+li {list-style-type: none;}
+ul{padding:0px;}
+.bold{font-weight: 700;}
 

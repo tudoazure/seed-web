@@ -209,11 +209,10 @@
 	        var receiverTigoId = inRecieverJID.substring(0, inRecieverJID.lastIndexOf('@'));
 	        var senderTigoId = inSenderJID.substring(0, inSenderJID.lastIndexOf('@'));
 	        var messageobj = {};
-	        var specialMsg = '', compMsg = '';
+	        var specialMsg = '';
 	        try{
 	        	specialMsg = JSON.parse(inMessage);
 	        	if(specialMsg.PRMCODE){
-	        		var compMsg = specialMsg.PRMCODE.message + "<br/> code: " +specialMsg.PRMCODE.promocode+ " <br/> Qty: " + specialMsg.PRMCODE.minQuantity + "<br/> Validity:" + specialMsg.PRMCODE.validity;
 	        		messageobj['isPromoCode'] = true;
 	        	}
 	        	if(specialMsg.CLSCHAT){
@@ -228,7 +227,7 @@
 	        messageobj['receiver'] = receiverTigoId;
 	        messageobj['last_ts'] = inTime;
 	        messageobj['sent_on'] = inTime;
-	        messageobj['txt'] = messageobj['isPromoCode']  ?  compMsg : inMessage;
+	        messageobj['txt'] = inMessage;//messageobj['isPromoCode']  ?  compMsg : inMessage;
 	        messageobj['id'] = "";
 	        messageobj['mid'] = mid;
 	        messageobj['state'] = 0;//0-sending;1-sent;2-Delivered;3-read
