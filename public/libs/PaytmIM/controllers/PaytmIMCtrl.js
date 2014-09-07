@@ -187,14 +187,14 @@
 						description: productObj.bargain_name,
 						email: user.login,
 						first_name : '',
-						id : productObj.product_id.toString() ,
+						id : productObj.product_id ? productObj.product_id.toString(): '' ,
 						image_url : productObj.image_url ,
 						last_name : '',
-						merchant_id: productObj.merchant.merchant_id.toString() ,
+						merchant_id: productObj.merchant.merchant_id ?  productObj.merchant.merchant_id.toString() : '' ,
 						name : productObj.merchant.merchant_name,
-						price : productObj.offer_price.toString(),
+						price : productObj.offer_price ? productObj.offer_price.toString() : '',
 						product_url : productObj.url,
-						user_id: user.user_id.toString()
+						user_id: user.user_id ? user.user_id.toString() : ''
 					};
 
 					var productMsg = {

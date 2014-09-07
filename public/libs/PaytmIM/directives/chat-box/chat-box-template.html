@@ -13,7 +13,7 @@
 		    	</div>
 		    	<div class="name fr pointer" align="left" title="{{product.PRDCNTXT.description}}" ng-click="gotoProduct(product)">			{{product.PRDCNTXT.description}}
 		    	</div>
-		    	<div class="dwnArrow fr pointer" ng-click="detailView = !detailView"></div>
+		    	<div class="dwnArrow fr pointer" ng-click="detailView = !detailView" ng-class="product.PRDCNTXT.description ? '' : 'bottom0'"></div>
 		    </div>
 		     <div class="productHeader h60" ng-show="detailView" ng-click="detailView = !detailView">
 		    	<div class="imgDiv fl pointer" ng-click="gotoProduct(product)">

@@ -186,6 +186,10 @@ background-image: -webkit-gradient(
 	padding-right: 5px;
 	position: absolute;
 	z-index: 10;
+	width: 100%;
+}
+.bottom0 {
+	bottom: 0 !important;
 }
 .imgDiv{
 	border:solid 1px #ccc;
@@ -277,11 +281,11 @@ background-image: -webkit-gradient(
 	width: 80%;
 	color: #666;
 	overflow: hidden;
-	/*text-overflow: ellipsis;
+	text-overflow: ellipsis;
 	display: -webkit-box;
-	-webkit-line-clamp: 1;
+	-webkit-line-clamp: 3;
 	-webkit-box-orient: vertical;
-	line-height: 18px;*/
+	line-height: 18px;
 }
 
 .detail:hover{
