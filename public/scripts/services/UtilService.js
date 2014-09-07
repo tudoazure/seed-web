@@ -125,11 +125,8 @@
         	var messageArray = []; var state = 0;
         	angular.forEach(messageList, function(value, index){
         		var messageObj ={};
-        		messageObj['deleted_on_sender'] = value['deleted_on_sender'];
 	            messageObj['sender'] = value['sender'];
 	            messageObj['receiver'] = value['receiver'];
-	            messageObj['can_forward'] = value['can_forward'];
-	            messageObj['delete_after'] = value['delete_after'];
 	            messageObj['last_ts'] = value['last_ts'];
 	            messageObj['sent_on'] = value['sent_on'];
 	            try{
@@ -140,7 +137,6 @@
 	            }
 	            messageObj['id'] = value['id'];
 	            messageObj['mid'] = value['mid'];
-	            messageObj['flags'] = 0;
 	            if (value['read_on'] != undefined)
 	                state = 3;
 	            else if (value['received_on'] != undefined)
@@ -215,17 +211,13 @@
 	        var receiverTigoId = inRecieverJID.substring(0, inRecieverJID.lastIndexOf('@'));
 	        var senderTigoId = inSenderJID.substring(0, inSenderJID.lastIndexOf('@'));
 	        var messageobj = {};
-	        messageobj['deleted_on_sender'] = "false";
 	        messageobj['sender'] = senderTigoId;
 	        messageobj['receiver'] = receiverTigoId;
-	        messageobj['can_forward'] = "true";
-	        messageobj['delete_after'] = "-1";
 	        messageobj['last_ts'] = inTime;
 	        messageobj['sent_on'] = inTime;
 	        messageobj['txt'] = inMessage;
 	        messageobj['id'] = "";
 	        messageobj['mid'] = mid;
-	        messageobj['flags'] = 0;//0-sent;1-recieved
 	        messageobj['state'] = 0;//0-sending;1-sent;2-Delivered;3-read
 	        messageobj['isProductDetails'] = false;
 	        messageobj['isCloseChatMesg'] = false;
