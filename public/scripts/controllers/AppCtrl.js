@@ -88,6 +88,7 @@
 					}, function success(response){
 						if(response && !response.status && response.data){
 						 	$scope.threads[threadId].agent = response.data.agent;
+						 	$scope.threads[threadId].user = $scope.chatServer.tegoId;
 						 	$scope.threads[threadId].status = "open";
 						 	var msg = '{"PRDCNTXT":{"id":"187474","name":"Smartaccy","description":"The Vanca Western Wear Raglan Sleeveless Shirt Poly Georgette Fabric Nylon Lace Yoke Party Wear Casual Shirt Blue (Size-M)","image_url":"http://assets.paytm.com/images/catalog/product/C/CM/CMPLXWSHIRT000TSF1886TVBLLL/0x1280/70/5.jpg","price":"Rs 559","product_url":"https://catalogapidev.paytm.com/v1/mobile/product/188620?resolution=720x128…dentifier=samsung-GT-I9300-353743053543797&client=androidapp&version=4.2.1","first_name":"Anshuman","last_name":"Gothwal","email":"anshuman.gothwal@gmail.com","user_id":"11065317","merchant_id":"20237"}}';
 						 	
