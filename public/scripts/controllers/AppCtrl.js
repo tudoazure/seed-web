@@ -165,6 +165,12 @@
 			        }
 				};
 
+				$scope.$on('ChatMessageChanged', function(event){
+					$scope.$apply(function (){
+                   		$scope.$storage = $localStorage;
+                	});
+				});
+
 				$scope.init();
 			}
     	]);

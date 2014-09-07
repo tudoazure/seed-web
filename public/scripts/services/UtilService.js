@@ -236,6 +236,7 @@
 	        
 	        if($localStorage.threads[threadId]){
 	        	$localStorage.threads[threadId].messages.push(messageobj);
+	        	$rootScope.$broadcast("ChatMessageChanged");
 	        }
 	        else{
 	        	alert("Thread not found");

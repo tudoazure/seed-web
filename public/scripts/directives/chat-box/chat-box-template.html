@@ -19,7 +19,11 @@
 		<div class="product-link">
 		</div>
 		<div class="message-box">
-			
+			<ul>
+				<li ng-repeat="message in chatData.messages">
+					{{message.txt}}
+				</li>
+			</ul>
 		</div>
 		<div class="send-message">
 			<textarea></textarea>

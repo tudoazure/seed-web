@@ -8,6 +8,7 @@
         templateUrl: 'scripts/directives/chat-box/chat-box-template.html',
         scope: false,
         link: function(scope, element, attrs) {
+          
           }
         }
     }]);
