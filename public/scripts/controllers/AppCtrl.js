@@ -140,7 +140,8 @@
 		                state: -1,
 		                txt: msgText,
 		                isProductDetails : true,
-		                isPromoCode : false
+		                isPromoCode : false,
+		                isCloseMessage : false
 		              }
 		              $scope.threads[threadId].messages.push(message);
 		              $scope.$storage.threads = $scope.threads;

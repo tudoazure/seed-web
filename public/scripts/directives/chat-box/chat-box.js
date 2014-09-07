@@ -39,7 +39,9 @@
                   sent_on: strTimeMii.substring(0, 10),
                   state: -1,
                   txt: scope.userMessage.replace(/\r?\n/g, " "),
-                  isProductDetails : false
+                  isProductDetails : false,
+                  isPromoCode : false,
+                  isCloseMessage : false
                 }
                 scope.chatData.messages.push(message);
                 var jId = scope.chatData.agent + "@" + Globals.AppConfig.ChatHostURI;
