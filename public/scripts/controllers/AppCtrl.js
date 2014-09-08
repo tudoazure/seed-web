@@ -5,6 +5,7 @@
 			function ($scope, $rootScope, $localStorage, $timeout, CoreService, ChatServerService, UtilService) {
 				$scope.init = function(){
 					// $scope.chatSDK = CoreService.chatSDK;
+					$localStorage.$reset();
 					$scope.$storage = $localStorage;
 					$scope.threads = $scope.$storage.threads ? $scope.$storage.threads : {};
 					$scope.chatServer = $scope.$storage.chatServer ? $scope.$storage.chatServer : {};

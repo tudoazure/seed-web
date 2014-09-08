@@ -23,7 +23,15 @@
               scope.collapse = !scope.collapse;
             };
 
-            scope.submitMessage = function(){
+            scope.closeChat = function(){
+                var body = {CLSCHAT : "chat closed" };
+                body = UtilService.stringifyEmitUnicode(body, true);
+                scope.userMessage = body;
+                scope.submitMessage(true);
+                scope.chatData.status = 'closed';
+            };
+
+            scope.submitMessage = function(isCloseMessage){
               if(scope.userMessage.trim() != ""){
                 var timeInMilliSecond = UtilService.getTimeInLongString();
                 var strTimeMii = timeInMilliSecond.toString();
@@ -41,7 +49,7 @@
                   txt: scope.userMessage.replace(/\r?\n/g, " "),
                   isProductDetails : false,
                   isPromoCode : false,
-                  isCloseMessage : false
+                  isCloseMessage : isCloseMessage
                 }
                 scope.chatData.messages.push(message);
                 var jId = scope.chatData.agent + "@" + Globals.AppConfig.ChatHostURI;
