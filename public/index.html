@@ -48,27 +48,18 @@
 </head>
 
 <body>
-    <div class="container" >
-        <!-- <div class="row">
-            <div class="col-md-12" align="center" style="margin-top:50px">
-                <button class="btn btn-default btn-success" ng-click="bargain(187474)">Bargain Product 1</button>
+    <div class="container" ng-controller="productPreviewCtrl" >
+        <div class="row">
+            <div class="col-md-4" align="left" style="margin-top:50px">
+                <a  ng-click="gotoProduct('/product1')">Product 1</a>
+            </div>
+            <div class="col-md-4" align="left" style="margin-top:50px">
+                 <a ng-click="gotoProduct('/product2')">Product 2</a>
+            </div>
+            <div class="col-md-4" align="left" style="margin-top:50px">
+                 <a ng-click="gotoProduct('/product3')">Product 3</a>
             </div>
         </div>
-        <div class="row">
-            <div class="col-md-12" align="center" style="margin-top:50px">
-                <button class="btn btn-default btn-success" ng-click="bargain(198045)">Bargain Product 2</button>
-            </div>
-        </div> -->
-        <!-- <div class="row">
-            <div class="col-md-12" align="center" style="margin-top:50px">
-                <button class="btn btn-default btn-success" ng-click="bargain(198034)">Bargain Product 3</button>
-            </div>
-        </div> -->
-        <!-- <div class="row">
-            <div class="col-md-12" align="center" style="margin-top:50px">
-                <button class="btn btn-default btn-warning" ng-click="clearLocalStorage()">Clear Local Storage</button>
-            </div>
-        </div> -->
     </div>
 
     <div ng-view ="" class="container" align="center"></div>

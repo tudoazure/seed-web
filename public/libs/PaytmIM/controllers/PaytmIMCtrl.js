@@ -42,6 +42,10 @@
 					$scope.connection = null;
 				};
 
+				$scope.$on('Clear-Local-Storage', function(){
+					$scope.clearLocalStorage();
+				});
+
 				$scope.$on('Active-chat-Changed', function($event, activeThread){
 					angular.forEach($scope.$storage.threads, function(thread, i){
 		                 thread['isActiveChat'] = false;
@@ -172,7 +176,7 @@
 						}
 						else{
 							delete $scope.threads[threadId];
-							alert("No merchant avaialble for baragin");
+							$rootScope.$broadcast('PaytmIM.NoMerchant', promoObj);
 						}
 						
 					}, function failure(error){
@@ -193,6 +197,7 @@
 						merchant_id: productObj.merchant.merchant_id ?  productObj.merchant.merchant_id.toString() : '' ,
 						name : productObj.merchant.merchant_name,
 						price : productObj.offer_price ? productObj.offer_price.toString() : '',
+						actual_price : productObj.actual_price ? productObj.actual_price.toString() : '',
 						product_url : productObj.url,
 						user_id: user.user_id ? user.user_id.toString() : ''
 					};
@@ -300,6 +305,14 @@
 						$scope.clearLocalStorage();
 					}
 				});
+
+				$scope.gotoProduct = function(product){
+	              $rootScope.$broadcast('PaytmIM.gotoProduct', product);
+	            };
+
+	            $scope.applyPromo =function(promoObj){
+	              $rootScope.$broadcast('PaytmIM.applyPromo', promoObj);
+	            };
 
 				$scope.$on('ChatMessageChanged', function(event){
 					$scope.$apply(function (){

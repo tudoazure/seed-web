@@ -36,15 +36,7 @@
                 return w.innerHeight();
             };
             scope.windowHeight = scope.getHeight();
-
-            scope.gotoProduct = function(){
-              alert('gotoProduct');
-            };
-
-            scope.applyPromo =function(promoObj){
-              console.log('Apply Promo',promoObj);
-              alert('Apply Promo');
-            }
+            
 
             scope.setWindowTop = function(height){
                var topHeight = (height -315) + "px";

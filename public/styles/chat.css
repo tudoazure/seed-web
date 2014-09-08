@@ -267,25 +267,29 @@ background-image: -webkit-gradient(
 	width: 9px;
 	position: relative;
 	margin-left: 1px;
-	bottom: 29px;
+	bottom: 40px;
 	padding: 5px;
 }
 .h60{
 	height: 60px !important;
 }
-.detail{
+.detailDiv{
 	font-size: 11px;
 	font-weight: 500;
 	text-align: left;
 	padding: 5px 0px 5px 0px;
 	width: 80%;
 	color: #666;
+}
+
+.detail{
+	
 	overflow: hidden;
 	text-overflow: ellipsis;
 	display: -webkit-box;
 	-webkit-line-clamp: 3;
 	-webkit-box-orient: vertical;
-	line-height: 18px;
+	line-height: 13px;
 }
 
 .detail:hover{
@@ -305,6 +309,10 @@ background-image: -webkit-gradient(
 .italic{
 	font-style: italic;
 	color: #2a6496;
+}
+.strike{
+	text-decoration: line-through;
+	margin-right: 10px;
 }
 
 li {list-style-type: none;}

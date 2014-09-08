@@ -20,9 +20,10 @@
 		    		<img class="image pointer" ng-src="{{product.PRDCNTXT.image_url}}"/>
 		    	
 		    	</div>
-		    	<div class="detail fr pointer" align="left" title="{{product.PRDCNTXT.description}}" ng-click="gotoProduct(product)">			{{product.PRDCNTXT.description}}
-		    			<br/>
-		    			{{product.PRDCNTXT.price}}
+		    	<div class=" fr pointer detailDiv" align="left" title="{{product.PRDCNTXT.description}}" ng-click="gotoProduct(product)">	
+		    			<div class="detail"> {{product.PRDCNTXT.description}} </div>
+		    			<div><span class="strike">Rs {{product.PRDCNTXT.actual_price}} </span> 
+		    			<span> Rs {{product.PRDCNTXT.price}} </span>  </div>
 		    	</div>
 		    	<div class="clear"></div>
 		    	<div class="upArrow fr pointer"></div>
