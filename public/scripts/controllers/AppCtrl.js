@@ -4,9 +4,16 @@
 		.controller('AppCtrl', ['$scope', '$rootScope', '$localStorage', '$timeout', 'CoreService', 'ChatServerService', 'UtilService',
 			function ($scope, $rootScope, $localStorage, $timeout, CoreService, ChatServerService, UtilService) {
 				$scope.init = function(){
-					// $scope.chatSDK = CoreService.chatSDK;
-					$localStorage.$reset();
+					
 					$scope.$storage = $localStorage;
+					if($scope.$storage && $scope.$storage.chatServer){
+						$scope.chatServer = $scope.$storage.chatServer;
+						$scope.chatServer.tid = UtilService.guid();
+						$scope.attachConnection($scope.$storage.chatServer.jid, $scope.$storage.chatServer.sid, $scope.$storage.strophe.rid);
+					}
+					else{
+						$localStorage.$reset();
+					}
 					$scope.threads = $scope.$storage.threads ? $scope.$storage.threads : {};
 					$scope.chatServer = $scope.$storage.chatServer ? $scope.$storage.chatServer : {};
 				};
@@ -27,6 +34,7 @@
 							$scope.chatServer.plustxtId = response.data['tego_id'] + "@" + Globals.AppConfig.ChatHostURI;
 							$scope.chatServer.password = response.data['password'] + response.data['tego_id'].substring(0, 3);
 							$scope.chatServer.connected = false;
+							
 							$scope.stropheConnection($scope.chatServer.plustxtId, $scope.chatServer.password, threadId);
 						}
 						else{
@@ -37,14 +45,28 @@
 				};
 
 				$scope.stropheConnection = function(login, password, threadId){
+					$scope.chatServer.tid = UtilService.guid();
+					localStorage.tid = $scope.chatServer.tid;
+					$scope.$storage.chatServer = $scope.chatServer;
 					var connection = new Strophe.Connection(Globals.AppConfig.StropheConnect);
-					connection.connect(login, password, function (status) {
+					connection.connect(login, password, $scope.chatServer.tid, function (status) {
 						$scope.conectionStateChange(connection, status, threadId);
+					})
+				};
+
+				$scope.attachConnection = function(jid, sid, rid){
+					$scope.chatServer.tid = UtilService.guid();
+					localStorage.tid = $scope.chatServer.tid;
+					$scope.$storage.chatServer = $scope.chatServer;
+					var connection = new Strophe.Connection(Globals.AppConfig.StropheConnect);
+					connection.attach(jid, sid, parseInt(rid, 10)+1, $scope.chatServer.tid, function (status) {
+						$scope.conectionStateChange(connection, status);
 					})
 				};
 
 				$scope.conectionStateChange = function(connection, status, threadId){
 					console.log("StropheStatus : ", status);
+					$scope.connection = connection;
 					switch(status){
 						case Strophe.Status.CONNECTING:
 							break;
@@ -61,20 +83,25 @@
 						case Strophe.Status.ERROR:
 							break;
 						case Strophe.Status.CONNFAIL:
+							$localStorage.$reset();
 							break;
 						case Strophe.Status.AUTHFAIL:
 							break;
 						case Strophe.Status.ATTACHED:
+							$scope.chatSDK = CoreService.chatSDK(connection);
+							$scope.connectedState();
 							break;
 					}
 				};
 
 				$scope.connectedState = function(threadId){
 					$scope.chatServer.connected = true;
-					$scope.$storage.chatServer = $scope.chatServer;
+					$scope.chatServer['sid'] = $scope.connection._proto.sid;
+					$scope.chatServer['jid'] = $scope.connection.jid;
 					if(threadId){
 						$scope.getMerchantAgent(threadId);
 					}
+					$scope.$storage.chatServer = $scope.chatServer;
 					$scope.chatSDK.connection.addHandler($scope.chatSDK.ping_handler, null, "iq", null, "ping1"); 
 				    $scope.chatSDK.connection.addHandler($scope.chatSDK.ping_handler_readACK, null, "iq", null, "readACK");   
 				    var iq = $iq({type: 'get'}).c('query', {xmlns: 'jabber:iq:roster'});

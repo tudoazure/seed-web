@@ -2193,12 +2193,13 @@ Strophe.Connection.prototype = {
      *      should almost always be set to 1 (the default).
      *    (String) route - The optional route value.
      */
-    connect: function (jid, pass, callback, wait, hold, route)
+    connect: function (jid, pass, tid, callback, wait, hold, route)
     {
         this.jid = jid;
         /** Variable: authzid
          *  Authorization identity.
          */
+        Strophe.tid = tid;
         this.authzid = Strophe.getBareJidFromJid(this.jid);
         /** Variable: authcid
          *  Authentication identity (User name).
@@ -2250,8 +2251,9 @@ Strophe.Connection.prototype = {
      *    (Integer) wind - The optional HTTBIND window value.  This is the
      *      allowed range of request ids that are valid.  The default is 5.
      */
-    attach: function (jid, sid, rid, callback, wait, hold, wind)
-    {
+    attach: function (jid, sid, rid, tid, callback, wait, hold, wind)
+    { 
+        Strophe.tid = tid;
         this._proto._attach(jid, sid, rid, callback, wait, hold, wind);
     },
 
@@ -3324,13 +3326,17 @@ Strophe.Connection.prototype = {
     _onDisconnectTimeout: function ()
     {
         Strophe.info("_onDisconnectTimeout was called");
-
-        this._proto._onDisconnectTimeout();
+        if(Strophe.tid == localStorage.tid){
+          this._proto._onDisconnectTimeout();
 
         // actually disconnect
-        this._doDisconnect();
+          this._doDisconnect();
 
-        return false;
+          return false;
+        }
+        else{
+          return true;
+        }
     },
 
     /** PrivateFunction: _onIdle
@@ -3806,6 +3812,7 @@ Strophe.Request = function (elem, func, rid, sends)
     this.origFunc = func;
     this.func = func;
     this.rid = rid;
+    localStorage["ngStorage-strophe"] = JSON.stringify({rid:this.rid });
     this.date = NaN;
     this.sends = sends || 0;
     this.abort = false;
@@ -3821,7 +3828,15 @@ Strophe.Request = function (elem, func, rid, sends)
         var now = new Date();
         return (now - this.dead) / 1000;
     };
-    this.xhr = this._newXHR();
+    console.log("TIDDDD", Strophe.tid);
+    if(Strophe.tid == localStorage.tid){
+      this.xhr = this._newXHR();
+    }
+    else{
+      this.abort = true;
+      this.sends = 0; 
+      this._requests = [];
+    }
 };
 
 Strophe.Request.prototype = {
@@ -4191,6 +4206,7 @@ Strophe.Bosh.prototype = {
      *  Sends all queued Requests or polls with empty Request if there are none.
      */
     _onIdle: function () {
+        if(Strophe.tid == localStorage.tid){
         var data = this._conn._data;
 
         // if no requests are in progress, poll
@@ -4245,6 +4261,7 @@ Strophe.Bosh.prototype = {
                 this._throttledRequestHandler();
             }
         }
+      }
     },
 
     /** PrivateFunction: _onRequestStateChange
@@ -4383,9 +4400,14 @@ Strophe.Bosh.prototype = {
                               time_elapsed > Math.floor(Strophe.TIMEOUT * this.wait));
         var secondaryTimeout = (req.dead !== null &&
                                 req.timeDead() > Math.floor(Strophe.SECONDARY_TIMEOUT * this.wait));
-        var requestCompletedWithServerError = (req.xhr.readyState == 4 &&
+        try{
+          var requestCompletedWithServerError = (req.xhr.readyState == 4 &&
                                                (reqStatus < 1 ||
                                                 reqStatus >= 500));
+        }
+        catch(e){
+
+        }
         if (primaryTimeout || secondaryTimeout ||
             requestCompletedWithServerError) {
             if (secondaryTimeout) {
@@ -4404,7 +4426,7 @@ Strophe.Bosh.prototype = {
             req = this._requests[i];
         }
 
-        if (req.xhr.readyState === 0) {
+        if (req && req.xhr &&  req.xhr.readyState === 0) {
             Strophe.debug("request id " + req.id +
                           "." + req.sends + " posting");
 
@@ -4444,7 +4466,9 @@ Strophe.Bosh.prototype = {
                                        Math.pow(req.sends, 3)) * 1000;
                 setTimeout(sendFunc, backoff);
             } else {
-                sendFunc();
+                if(Strophe.tid == localStorage.tid){
+                  sendFunc();
+              }
             }
 
             req.sends++;
@@ -4459,7 +4483,7 @@ Strophe.Bosh.prototype = {
             if (this._conn.rawOutput !== Strophe.Connection.prototype.rawOutput) {
                 this._conn.rawOutput(req.data);
             }
-        } else {
+        } else if(req && req.xhr &&  req.xhr.readyState) {
             Strophe.debug("_processRequest: " +
                           (i === 0 ? "first" : "second") +
                           " request has readyState of " +

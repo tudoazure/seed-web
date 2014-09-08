@@ -251,10 +251,13 @@ background-image: -webkit-gradient(
 .imgDiv{
 	border:solid 1px #ccc;
 	width: 15%;
+	margin-left: 2px;
+	border-radius: 50%;
 }
 .image{
 	height:30px;
 	width:30px;
+	border-radius: 50%;
 }
 .name{
 	font-size: 11px;
