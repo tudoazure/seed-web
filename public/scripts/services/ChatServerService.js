@@ -35,20 +35,9 @@
 		  }
 		});
 
-		var fetchUserHistory = $resource(Globals.AppConfig.GetUserHistory, {}, {
-		  query: {
-		    method:'POST', 
-		    isArray: false, 
-		    params:{}, 
-		    headers: {'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'},
-		    transformRequest: manageReqPacketTransform
-		  }
-		});
-
 		ChatServerService = {
       		login: chatServerLogin,
-      		getAgent : getAgent,
-      		fetchUserHistory: fetchUserHistory
+      		getAgent : getAgent
       	}
 
 		return ChatServerService;

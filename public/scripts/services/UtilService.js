@@ -108,7 +108,6 @@
 
 		var getLocalTime = function(ts) {
 			return moment.unix(ts).format("Do MMM  h:mm A");
-            //return moment.unix(ts).format("MMM Do, h:mm:ss a");
         };
 
         var milliTimeToString = function(inMilliSeconds) {
@@ -198,7 +197,6 @@
 			        midread[midread.length] = messageArray[key]['mid'];
 			    }
 			}
-			// messageArray can be undefined after close chat
 			if(messageArray){
 				$rootScope.plustxtcacheobj['message'][inotherpartytigoid] = messageArray;
 			}
@@ -211,14 +209,17 @@
 	        var receiverTigoId = inRecieverJID.substring(0, inRecieverJID.lastIndexOf('@'));
 	        var senderTigoId = inSenderJID.substring(0, inSenderJID.lastIndexOf('@'));
 	        var messageobj = {};
-	        var promoMsg = '', compMsg = '';
+	        var specialMsg = '', compMsg = '';
 	        try{
-	        	promoMsg = JSON.parse(inMessage);
-	        	if(promoMsg.PRMCODE){
-	        		var compMsg = "message:" + promoMsg.PRMCODE.message + "<br/> code: " +promoMsg.PRMCODE.promocode+ " <br/> Qty: " + promoMsg.PRMCODE.minQuantity + "<br/> Validity:" + promoMsg.PRMCODE.validity;
-
+	        	specialMsg = JSON.parse(inMessage);
+	        	if(specialMsg.PRMCODE){
+	        		var compMsg = specialMsg.PRMCODE.message + "<br/> code: " +specialMsg.PRMCODE.promocode+ " <br/> Qty: " + specialMsg.PRMCODE.minQuantity + "<br/> Validity:" + specialMsg.PRMCODE.validity;
 	        		messageobj['isPromoCode'] = true;
 	        	}
+	        	if(specialMsg.CLSCHAT){
+	        		messageobj['isCloseMessage'] = true;
+	        	}
+
 	        }
 	        catch(exception){
 
@@ -232,7 +233,6 @@
 	        messageobj['mid'] = mid;
 	        messageobj['state'] = 0;//0-sending;1-sent;2-Delivered;3-read
 	        messageobj['isProductDetails'] = false;
-	        messageobj['isCloseChatMesg'] = false;
 	        if(threadId){
 	        	messageobj['threadId'] = threadId;
 	    	}
@@ -245,41 +245,6 @@
 	        else{
 	        	alert("Thread not found");
 	        }
-	        // if (receiverTigoId == $rootScope.tigoId){
-	        //     otherpartyid = senderTigoId;
-	        // }
-	        // else{
-	        //     otherpartyid = receiverTigoId;
-	        // }
-	     //    if(isSpecialMessage){
-	     //    	try{
-	     //    		var specialMessage = JSON.parse(inMessage);
-	     //    		if(specialMessage.PRDCNTXT){
-		    //     		messageobj['isProductDetails'] = true;
-						// var productObj ={}
-						// productObj.imageUrl = specialMessage.PRDCNTXT.image_url;
-						// productObj.description = specialMessage.PRDCNTXT.description;
-						// productObj.price = specialMessage.PRDCNTXT.price.replace("Rs" , "").trim();
-						// productObj.merchantId = specialMessage.PRDCNTXT.merchant_id;
-						// productObj.productId = specialMessage.PRDCNTXT.id;
-						// productObj.userId = specialMessage.PRDCNTXT.user_id;
-						// productObj.productUrl = specialMessage.PRDCNTXT.product_url;
-						// $rootScope.plustxtcacheobj.products[otherpartyid] = productObj;
-
-						// // Assigning ThreadId for a new chat
-						// if(!messageobj.threadId){
-						// 	messageobj['threadId'] = productObj.productId + "-" + guid();
-						// }
-			   //      }
-			   //      else if(specialMessage.CLSCHAT){
-			   //      	messageobj['isCloseChatMesg'] = true;
-			   //      }
-	     //        }
-	     //        catch(e){
-	     //        }
-	     //    }
-
-
 	    };
 
 

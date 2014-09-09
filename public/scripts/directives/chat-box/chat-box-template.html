@@ -21,14 +21,12 @@
 		    			<div class='chat-name' ng-if='!message.isPromoCode'>{{message.txt}}</div>
 		    			<div ng-if="message.isPromoCode" ng-bind-html="returnTrustHtml(message.txt)"> </div>
 		    		</div>
-		    		<div align="center" class="clear messageTime" ng-if="message.sender != chatData.user" style='font-size:9px' >{{parseDate(message.sent_on)}}</div>
+		    		<div align="center" class="clear messageTime" ng-if="message.sender != chatData.user && !message.isCloseMessage" style='font-size:9px' >{{parseDate(message.sent_on)}}</div>
 		    		<div ng-if="message.isCloseMessage">
-		    			<div>You closed the conversation</div>
+		    			<div ng-if="message.sender == chatData.user">You closed the conversation</div>
+		    			<div ng-if="message.sender != chatData.user">Agent closed the conversation</div>
 		    		</div>
 		    		<a ng-click="applyPromo()" ng-if="message.isPromoCode" style="cursor:pointer;">Apply</a>
-		    		<!-- <div ng-if="message.isPromoCode">
-		    			<div>{{message.txt}}</div>
-		    		</div> -->
 		    	</div>
 		    </div>
 		    <div class="chatbox">
