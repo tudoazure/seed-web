@@ -6,13 +6,14 @@
 				$scope.init = function(){
 					
 					$scope.$storage = $localStorage;
-					if($scope.$storage && $scope.$storage.chatServer){
+					if($scope.$storage && $scope.$storage.chatServer && $scope.$storage.threads){
 						$scope.chatServer = $scope.$storage.chatServer;
 						$scope.chatServer.tid = UtilService.guid();
 						$scope.attachConnection($scope.$storage.chatServer.jid, $scope.$storage.chatServer.sid, $scope.$storage.strophe.rid);
 					}
 					else{
 						$localStorage.$reset();
+						$scope.presentBargain = 0;
 					}
 					$scope.threads = $scope.$storage.threads ? $scope.$storage.threads : {};
 					$scope.chatServer = $scope.$storage.chatServer ? $scope.$storage.chatServer : {};
@@ -25,10 +26,10 @@
 	              	$scope.$storage.threads[activeThread].isActiveChat = true;
 				})
 
-				$scope.loginToChatServer = function(threadId){
+				$scope.loginToChatServer = function(threadId, productId){
 					ChatServerService.login.query({
-						email : "anshuman.gothwal@gmail.com",
-						access_token : "3bc529f1-987d-4d3a-87a5-8af261fc6141",
+						email : Globals.AppConfig.LoginEmail,
+						access_token : Globals.AppConfig.AccessToken,
 						device_type : "web",
 						device_id : navigator.userAgent,
 						utype : "Normal",
@@ -42,7 +43,7 @@
 							$scope.chatServer.password = response.data['password'] + response.data['tego_id'].substring(0, 3);
 							$scope.chatServer.connected = false;
 							
-							$scope.stropheConnection($scope.chatServer.plustxtId, $scope.chatServer.password, threadId);
+							$scope.stropheConnection($scope.chatServer.plustxtId, $scope.chatServer.password, threadId, productId);
 						}
 						else{
 						}
@@ -51,13 +52,13 @@
 					})
 				};
 
-				$scope.stropheConnection = function(login, password, threadId){
+				$scope.stropheConnection = function(login, password, threadId, productId){
 					$scope.chatServer.tid = UtilService.guid();
 					localStorage.tid = $scope.chatServer.tid;
 					$scope.$storage.chatServer = $scope.chatServer;
 					var connection = new Strophe.Connection(Globals.AppConfig.StropheConnect);
 					connection.connect(login, password, $scope.chatServer.tid, function (status) {
-						$scope.conectionStateChange(connection, status, threadId);
+						$scope.conectionStateChange(connection, status, threadId, productId);
 					})
 				};
 
@@ -71,7 +72,7 @@
 					})
 				};
 
-				$scope.conectionStateChange = function(connection, status, threadId){
+				$scope.conectionStateChange = function(connection, status, threadId, productId){
 					console.log("StropheStatus : ", status);
 					$scope.connection = connection;
 					switch(status){
@@ -79,7 +80,7 @@
 							break;
 						case Strophe.Status.CONNECTED:
 							$scope.chatSDK = CoreService.chatSDK(connection);
-							$scope.connectedState(threadId);
+							$scope.connectedState(threadId, productId);
 							break;
 						case Strophe.Status.DISCONNECTING:
 							break;
@@ -101,12 +102,12 @@
 					}
 				};
 
-				$scope.connectedState = function(threadId){
+				$scope.connectedState = function(threadId, productId){
 					$scope.chatServer.connected = true;
 					$scope.chatServer['sid'] = $scope.connection._proto.sid;
 					$scope.chatServer['jid'] = $scope.connection.jid;
 					if(threadId){
-						$scope.getMerchantAgent(threadId);
+						$scope.getMerchantAgent(threadId, productId);
 					}
 					$scope.$storage.chatServer = $scope.chatServer;
 					$scope.chatSDK.connection.addHandler($scope.chatSDK.ping_handler, null, "iq", null, "ping1"); 
@@ -116,7 +117,7 @@
 				    $scope.chatSDK.connection.addHandler($scope.chatSDK.on_message, null, "message", "chat");
 				};
 
-				$scope.getMerchantAgent = function(threadId){
+				$scope.getMerchantAgent = function(threadId, productId){
 					ChatServerService.getAgent.query({
 						session_id : $scope.chatServer.sessionId,
 						merchant_id : 1
@@ -125,12 +126,13 @@
 						 	$scope.threads[threadId].agent = "fmpwrn";//response.data.agent;
 						 	$scope.threads[threadId].user = $scope.chatServer.tegoId;
 						 	$scope.threads[threadId].status = "open";
-						 	var msg = '{"PRDCNTXT":{"id":"187474","name":"Smartaccy","description":"The Vanca Western Wear Raglan Sleeveless Shirt Poly Georgette Fabric Nylon Lace Yoke Party Wear Casual Shirt Blue (Size-M)","image_url":"http://assets.paytm.com/images/catalog/product/C/CM/CMPLXWSHIRT000TSF1886TVBLLL/0x1280/70/5.jpg","price":"Rs 559","product_url":"https://catalogapidev.paytm.com/v1/mobile/product/188620?resolution=720x128…dentifier=samsung-GT-I9300-353743053543797&client=androidapp&version=4.2.1","first_name":"Anshuman","last_name":"Gothwal","email":"anshuman.gothwal@gmail.com","user_id":"11065317","merchant_id":"20237"}}';
-						 	
+						 	var msg = Globals.AppConfig.ProductMessage[productId];
 						 	$scope.sendInitialMessage(threadId, msg);
+						 	$scope.presentBargain++;
 						}
 						else{
-							console.log("No merchant available");
+							delete $scope.threads[threadId];
+							alert("No merchant avaialble for baragin");
 						}
 						
 					}, function failure(error){
@@ -139,22 +141,36 @@
 				};
 
 				$scope.initiateBargain = function(productId){
-					var threadId = productId + "-" + UtilService.guid();
-					if(!$scope.threads[threadId]){
-						
-						$scope.threads[threadId] = {};
-						$scope.threads[threadId].productId = productId;
-						$scope.threads[threadId].messages = [];
-						$scope.threads[threadId].agent = "";
-						if($scope.chatServer && $scope.chatServer.connected){
-							$scope.getMerchantAgent(threadId);
+					if($scope.presentBargain < Globals.AppConfig.MaxThreads){
+						var productPresent = false;
+						angular.forEach($scope.threads, function(value, index){
+							if(value.productId == productId){
+								productPresent = true;
+							}
+						})
+						if(productPresent){
+							alert("Product already exist for bargain");
 						}
 						else{
-							$scope.loginToChatServer(threadId);
+							var threadId = productId + "-" + UtilService.guid();
+							if(!$scope.threads[threadId]){
+								
+								$scope.threads[threadId] = {};
+								$scope.threads[threadId].productId = productId;
+								$scope.threads[threadId].messages = [];
+								$scope.threads[threadId].agent = "";
+								if($scope.chatServer && $scope.chatServer.connected){
+									$scope.getMerchantAgent(threadId, productId);
+								}
+								else{
+									$scope.loginToChatServer(threadId, productId);
+								}
+							}
 						}
 					}
 					else{
-						console.log("Product already exist for bargain");
+						var message = "Only " + Globals.AppConfig.MaxThreads + " concurrent bargains are allowed."
+						alert(message);
 					}
 				};
 
@@ -195,6 +211,12 @@
       //        			var tigo_id = Strophe.getNodeFromJid(jid);
 						// $scope.chatSDK.send_Read_Notification(jid, jid_id, tigo_id);
 			        }
+				};
+
+				$scope.removeThread = function(threadId){
+					$scope.presentBargain = $scope.presentBargain - 1;
+					delete $scope.threads[threadId];
+					delete $scope.$storage.threads[threadId];
 				};
 
 				$scope.$on('ChatMessageChanged', function(event){

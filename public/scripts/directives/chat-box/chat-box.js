@@ -52,6 +52,7 @@
                 scope.submitMessage(true);
                 scope.chatData.status = 'closed';
                 scope.isClosed = !scope.isClosed;
+                scope.removeThread(scope.thread);
             };
 
             scope.submitMessage = function(isCloseMessage){
