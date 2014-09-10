@@ -35,10 +35,10 @@ angular.module('PaytmIM').factory('CoreService', [ '$rootScope', 'UtilService', 
             },
             
             on_message: function(message) {
-                console.log("CoreService @on_message called :");
+                //console.log("CoreService @on_message called :");
                 var threadId = $(message).find("thread").text();
                 var body = $(message).find("html > body");
-                console.log("INCOMING MESSAGE", $(message)[0]);
+                //console.log("INCOMING MESSAGE", $(message)[0]);
                 if (body.length === 0) {
                     body = $(message).find('body');
                     if (body.length > 0) {
@@ -60,7 +60,7 @@ angular.module('PaytmIM').factory('CoreService', [ '$rootScope', 'UtilService', 
                     });
                     body = span;
                 }
-                console.log("CoreService  @on_message - Message Text :", body);
+                //console.log("CoreService  @on_message - Message Text :", body);
                 var response = {};
                 response['full_jid'] = $(message).attr('from');
                 response['id'] = $(message).attr('id');
@@ -102,12 +102,12 @@ angular.module('PaytmIM').factory('CoreService', [ '$rootScope', 'UtilService', 
                     }
                     // Delivery Acknowledgment
                     if (deliveryAckID){
-                        console.log("@on_message : Status -- DELIVERED From : " + response['full_jid']);
+                        //console.log("@on_message : Status -- DELIVERED From : " + response['full_jid']);
                         UtilService.updateMessageStatus(deliveryAckID, 2, Strophe.getNodeFromJid(jid), timeInMilliSecond);
                     }
                     //read  Acknowledgment
                     if (readAckID){
-                        console.log("@on_message : Status -- READ From : " + response['full_jid']);
+                        //console.log("@on_message : Status -- READ From : " + response['full_jid']);
                         UtilService.updateMessageStatus(readAckID, 3, Strophe.getNodeFromJid(jid), timeInMilliSecond);
                     }
                 }
@@ -119,12 +119,12 @@ angular.module('PaytmIM').factory('CoreService', [ '$rootScope', 'UtilService', 
                     catch (err) {
                     }
                     if (readAckID){
-                        console.log("@on_message : Status -- READ From : " + response['full_jid']);
+                        //console.log("@on_message : Status -- READ From : " + response['full_jid']);
                         UtilService.updateMessageStatus(readAckID, 3, Strophe.getNodeFromJid(jid), timeInMilliSecond);
                     }
                 }
                 else {
-                    console.log("@on_message :New Text Message : " + message.textContent);
+                    //console.log("@on_message :New Text Message : " + message.textContent);
 
                     var strTimeMii = timeInMilliSecond.toString();
                     var messageId = $localStorage.chatServer.tegoId + "-dv-" + strTimeMii;
@@ -134,13 +134,13 @@ angular.module('PaytmIM').factory('CoreService', [ '$rootScope', 'UtilService', 
                     // $('#mid-'+messageID).html('Delivered&nbsp;');
                     on_Message_Update_Chat(response);
                     connection.send(message2);
-                    console.log('@on_message : Delivery Acknowledment Sent ' + message2);
+                    //console.log('@on_message : Delivery Acknowledment Sent ' + message2);
                 }
                 return true;
             },
 
             ping_handler : function (iq){
-                console.log('ping_handler Called');
+                //console.log('ping_handler Called');
                 var offmessageArray= UtilService.getAllPendingMessages();       
                 var jid;
                 var mid;
@@ -149,17 +149,17 @@ angular.module('PaytmIM').factory('CoreService', [ '$rootScope', 'UtilService', 
                 var strTimeMii;
                 var message;
                 if(offmessageArray == null || offmessageArray === undefined ){
-                    console.log("All Pending Messages Count:" + "0");
+                    //console.log("All Pending Messages Count:" + "0");
                 }
                 else{
-                    console.log("All Pending Messages Count : " + offmessageArray.length);
+                    //console.log("All Pending Messages Count : " + offmessageArray.length);
                     for (var i=0 ; i < offmessageArray.length ; i++){
-                        console.log('tegoid ' + offmessageArray[i]['tegoid']+ ' mid '+offmessageArray[i]['mid']+ 'body '+ offmessageArray[i]['body'])
+                        //console.log('tegoid ' + offmessageArray[i]['tegoid']+ ' mid '+offmessageArray[i]['mid']+ 'body '+ offmessageArray[i]['body'])
                         jid=offmessageArray[i]['tegoid']+'@' + Globals.AppConfig.ChatHostURI;
                         mid=offmessageArray[i]['mid'];
                         body=offmessageArray[i]['body'];
                         var thread = offmessageArray[i]['threadId'];
-                        console.log("THREAD : " + thread);
+                        //console.log("THREAD : " + thread);
                         message = $msg({to: jid, "type": "chat", "id": mid}).c('body').t(body).up().c('thread').t(thread).up().c('active', {xmlns: "http://jabber.org/protocol/chatstates"}).up()
                         .c('request', {xmlns: 'urn:xmpp:receipts'}).up().c('meta').c('acl', {deleteafter: "-1", canforward: "1", candownload: "1"});
                        connection.send(message);
@@ -209,7 +209,7 @@ angular.module('PaytmIM').factory('CoreService', [ '$rootScope', 'UtilService', 
                       // Note that since it is an delivery/ read ack , message ID containd -div- attributes
                       var message2 = $msg({to: jid, "type": "chat", "id": mid}).c('read').t(midreadArray[i]).up().c('meta');
                       connection.send(message2);
-                      console.log('Read Acknowledgement Sent: ' + message2);
+                      //console.log('Read Acknowledgement Sent: ' + message2);
                     }
                 }
                 return true;

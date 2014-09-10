@@ -2086,8 +2086,8 @@ Strophe.Connection.prototype = {
      *  before that connection is reused.
      */
 
-    reattach : function(){
-        this._proto._reattach();
+    reattach : function(sid){
+        this._proto._reattach(sid);
         // SASL
         this.do_session = false;
         this.do_bind = false;
@@ -3861,7 +3861,6 @@ Strophe.Request = function (elem, func, rid, sends)
           var now = new Date();
           return (now - this.dead) / 1000;
       };
-      console.log("TIDDDD", Strophe.tid);
       this.xhr = this._newXHR();
     }
     else{
@@ -4043,9 +4042,10 @@ Strophe.Bosh.prototype = {
      *
      *  This function is called by the reset function of the Strophe Connection
      */
-    _reattach: function ()
+    _reattach: function (sid)
     {
         //this.rid = Math.floor(Math.random() * 4294967295);
+        this.sid = sid;
     },
 
     /** PrivateFunction: _connect

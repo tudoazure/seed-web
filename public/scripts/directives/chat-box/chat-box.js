@@ -12,7 +12,6 @@
               if(scope.chatData.messages[0]){
                 try{
                   scope.product = JSON.parse(scope.chatData.messages[0].txt);
-                  console.log(scope.product);
                 }
                 catch(exception){}
               }

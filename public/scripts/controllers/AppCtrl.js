@@ -37,12 +37,12 @@
 					$(window).bind('focus', function() { 
 						if($scope.$storage.chatServer && $scope.chatServer.tid != localStorage.tid ){
 							$scope.chatSDK = null;
-							$scope.connection.reattach();
-							$scope.chatSDK = null;
+							$scope.connection.reattach($scope.$storage.chatServer.sid);
+							$scope.chatSDK = CoreService.chatSDK($scope.connection);
 							$scope.chatServer = $scope.$storage.chatServer;
 							$scope.chatServer.tid = UtilService.guid();
 							localStorage.tid = $scope.chatServer.tid;
-							$scope.stropheAttach($scope.$storage.chatServer.jid, $scope.$storage.chatServer.sid, parseInt(localStorage.rid, 10) + 1, $scope.chatServer.tid, true);
+							$scope.stropheAttach($scope.$storage.chatServer.jid, $scope.$storage.chatServer.sid, parseInt(localStorage.rid, 10), $scope.chatServer.tid);
 							console.log("FOCUS");
 						}
 						$(window).unbind('focus');
@@ -100,7 +100,7 @@
 					})
 				};
 
-				$scope.stropheAttach = function(jid, sid, rid, tid, isReAttach){
+				$scope.stropheAttach = function(jid, sid, rid, tid){
 					// $scope.chatServer.tid = UtilService.guid();
 					// localStorage.tid = $scope.chatServer.tid;
 					console.log("RID FOR ATTACH", rid);
