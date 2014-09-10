@@ -164,7 +164,7 @@
 						merchant_id : 1
 					}, function success(response){
 						if(response && !response.status && response.data){
-						 	$scope.threads[threadId].agent = "fmpwrn";//response.data.agent;
+						 	$scope.threads[threadId].agent = Globals.AppConfig.AgentId;//response.data.agent;
 						 	$scope.threads[threadId].user = $scope.chatServer.tegoId;
 						 	$scope.threads[threadId].status = "open";
 						 	var msg = Globals.AppConfig.ProductMessage[productId];
