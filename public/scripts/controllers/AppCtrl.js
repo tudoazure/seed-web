@@ -4,12 +4,12 @@
 		.controller('AppCtrl', ['$scope', '$rootScope', '$localStorage', '$timeout', 'CoreService', 'ChatServerService', 'UtilService',
 			function ($scope, $rootScope, $localStorage, $timeout, CoreService, ChatServerService, UtilService) {
 				$scope.init = function(){
-					
 					$scope.$storage = $localStorage;
 					if($scope.$storage && $scope.$storage.chatServer && $scope.$storage.threads){
 						$scope.chatServer = $scope.$storage.chatServer;
 						$scope.chatServer.tid = UtilService.guid();
-						$scope.attachConnection($scope.$storage.chatServer.jid, $scope.$storage.chatServer.sid, $scope.$storage.strophe.rid);
+						localStorage.tid = $scope.chatServer.tid;
+						$scope.stropheAttach($scope.$storage.chatServer.jid, $scope.$storage.chatServer.sid, parseInt(localStorage.rid, 10), $scope.chatServer.tid);
 					}
 					else{
 						$localStorage.$reset();
@@ -19,12 +19,51 @@
 					$scope.chatServer = $scope.$storage.chatServer ? $scope.$storage.chatServer : {};
 				};
 
+				$scope.clearLocalStorage = function(){
+					$localStorage.$reset();
+					delete localStorage.rid;
+					delete localStorage.tid;
+				};
+
 				$scope.$on('Active-chat-Changed', function($event, activeThread){
 					angular.forEach($scope.$storage.threads, function(thread, i){
 		                 thread['isActiveChat'] = false;
 		            })
 	              	$scope.$storage.threads[activeThread].isActiveChat = true;
 				})
+
+				$(window).bind('blur', function(event) {
+					console.log("BLUR");
+					$(window).bind('focus', function() { 
+						if($scope.$storage.chatServer && $scope.chatServer.tid != localStorage.tid ){
+							$scope.chatSDK = null;
+							$scope.connection.reattach();
+							$scope.chatSDK = null;
+							$scope.chatServer = $scope.$storage.chatServer;
+							$scope.chatServer.tid = UtilService.guid();
+							localStorage.tid = $scope.chatServer.tid;
+							$scope.stropheAttach($scope.$storage.chatServer.jid, $scope.$storage.chatServer.sid, parseInt(localStorage.rid, 10) + 1, $scope.chatServer.tid, true);
+							console.log("FOCUS");
+						}
+						$(window).unbind('focus');
+					});
+				});
+
+				// $(window).bind('blur', function(event) {
+				// 	console.log("BLUR");
+				// 	$(window).bind('focus', function() { 
+				// 		if($scope.$storage.chatServer && $scope.chatServer.tid != localStorage.tid ){
+				// 			$scope.chatSDK = null;
+				// 			$scope.chatServer = {}; //$scope.$storage.chatServer;
+				// 			$scope.$storage.chatServer ={};
+				// 			$scope.loginToChatServer();
+				// 			//$scope.stropheConnection($scope.chatServer.plustxtId, $scope.chatServer.password);
+				// 			//$scope.stropheAttach($scope.$storage.chatServer.jid, $scope.$storage.chatServer.sid, parseInt(localStorage.rid, 10) + 1, $scope.chatServer.tid, true);
+				// 			console.log("FOCUS");
+				// 		}
+				// 		$(window).unbind('focus');
+				// 	});
+				// });
 
 				$scope.loginToChatServer = function(threadId, productId){
 					ChatServerService.login.query({
@@ -42,7 +81,6 @@
 							$scope.chatServer.plustxtId = response.data['tego_id'] + "@" + Globals.AppConfig.ChatHostURI;
 							$scope.chatServer.password = response.data['password'] + response.data['tego_id'].substring(0, 3);
 							$scope.chatServer.connected = false;
-							
 							$scope.stropheConnection($scope.chatServer.plustxtId, $scope.chatServer.password, threadId, productId);
 						}
 						else{
@@ -62,12 +100,14 @@
 					})
 				};
 
-				$scope.attachConnection = function(jid, sid, rid){
-					$scope.chatServer.tid = UtilService.guid();
-					localStorage.tid = $scope.chatServer.tid;
+				$scope.stropheAttach = function(jid, sid, rid, tid, isReAttach){
+					// $scope.chatServer.tid = UtilService.guid();
+					// localStorage.tid = $scope.chatServer.tid;
+					console.log("RID FOR ATTACH", rid);
+					// localStorage.rid = rid;
 					$scope.$storage.chatServer = $scope.chatServer;
 					var connection = new Strophe.Connection(Globals.AppConfig.StropheConnect);
-					connection.attach(jid, sid, parseInt(rid, 10)+1, $scope.chatServer.tid, function (status) {
+					connection.attach(jid, sid, rid, tid, function (status) {
 						$scope.conectionStateChange(connection, status);
 					})
 				};
@@ -92,7 +132,7 @@
 						case Strophe.Status.ERROR:
 							break;
 						case Strophe.Status.CONNFAIL:
-							$localStorage.$reset();
+							//$localStorage.$reset();
 							break;
 						case Strophe.Status.AUTHFAIL:
 							break;

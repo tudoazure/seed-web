@@ -155,7 +155,7 @@ angular.module('PaytmIM').factory('CoreService', [ '$rootScope', 'UtilService', 
                     console.log("All Pending Messages Count : " + offmessageArray.length);
                     for (var i=0 ; i < offmessageArray.length ; i++){
                         console.log('tegoid ' + offmessageArray[i]['tegoid']+ ' mid '+offmessageArray[i]['mid']+ 'body '+ offmessageArray[i]['body'])
-                        jid=offmessageArray[i]['tegoid']+'@' + "chat-staging.paytm.com";
+                        jid=offmessageArray[i]['tegoid']+'@' + Globals.AppConfig.ChatHostURI;
                         mid=offmessageArray[i]['mid'];
                         body=offmessageArray[i]['body'];
                         var thread = offmessageArray[i]['threadId'];

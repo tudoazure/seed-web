@@ -1332,7 +1332,7 @@ Strophe = {
      */
     /* jshint ignore:start */
     log: function (level, msg)
-    {
+    { 
         return;
     },
     /* jshint ignore:end */
@@ -1367,6 +1367,7 @@ Strophe = {
      */
     warn: function (msg)
     {
+        console.log("WARN", msg);
         this.log(this.LogLevel.WARN, msg);
     },
 
@@ -1378,6 +1379,7 @@ Strophe = {
      */
     error: function (msg)
     {
+        console.log(msg);
         this.log(this.LogLevel.ERROR, msg);
     },
 
@@ -1389,6 +1391,7 @@ Strophe = {
      */
     fatal: function (msg)
     {
+        console.log("FATAL", msg);
         this.log(this.LogLevel.FATAL, msg);
     },
 
@@ -2082,6 +2085,29 @@ Strophe.Connection.prototype = {
      *  This function should be called after a connection is disconnected
      *  before that connection is reused.
      */
+
+    reattach : function(){
+        this._proto._reattach();
+        // SASL
+        this.do_session = false;
+        this.do_bind = false;
+        // handler lists
+        this.timedHandlers = [];
+        this.handlers = [];
+        this.removeTimeds = [];
+        this.removeHandlers = [];
+        this.addTimeds = [];
+        this.addHandlers = [];
+        this._authentication = {};
+
+        this.authenticated = false;
+        this.disconnecting = false;
+        this.connected = true;
+        this.errors = 0;
+        this._requests = [];
+        this._uniqueId = 0;
+    },
+
     reset: function ()
     {
         this._proto._reset();
@@ -2254,6 +2280,9 @@ Strophe.Connection.prototype = {
     attach: function (jid, sid, rid, tid, callback, wait, hold, wind)
     { 
         Strophe.tid = tid;
+        if(this.rid){
+          this.rid = rid;
+        }
         this._proto._attach(jid, sid, rid, callback, wait, hold, wind);
     },
 
@@ -3804,32 +3833,35 @@ Strophe.Connection.prototype.mechanisms[Strophe.SASLMD5.prototype.name] = Stroph
  */
 Strophe.Request = function (elem, func, rid, sends)
 {
-    this.id = ++Strophe._requestId;
-    this.xmlData = elem;
-    this.data = Strophe.serialize(elem);
-    // save original function in case we need to make a new request
-    // from this one.
-    this.origFunc = func;
-    this.func = func;
-    this.rid = rid;
-    localStorage["ngStorage-strophe"] = JSON.stringify({rid:this.rid });
-    this.date = NaN;
-    this.sends = sends || 0;
-    this.abort = false;
-    this.dead = null;
-
-    this.age = function () {
-        if (!this.date) { return 0; }
-        var now = new Date();
-        return (now - this.date) / 1000;
-    };
-    this.timeDead = function () {
-        if (!this.dead) { return 0; }
-        var now = new Date();
-        return (now - this.dead) / 1000;
-    };
-    console.log("TIDDDD", Strophe.tid);
     if(Strophe.tid == localStorage.tid){
+      this.id = ++Strophe._requestId;
+      this.xmlData = elem;
+      this.data = Strophe.serialize(elem);
+      // save original function in case we need to make a new request
+      // from this one.
+      this.origFunc = func;
+      this.func = func;
+      this.rid = parseInt(localStorage.rid, 10);
+      // if(rid < parseInt(localStorage.rid, 10)){
+      //   rid = localStorage.rid;
+      // }
+      
+      this.date = NaN;
+      this.sends = sends || 0;
+      this.abort = false;
+      this.dead = null;
+
+      this.age = function () {
+          if (!this.date) { return 0; }
+          var now = new Date();
+          return (now - this.date) / 1000;
+      };
+      this.timeDead = function () {
+          if (!this.dead) { return 0; }
+          var now = new Date();
+          return (now - this.dead) / 1000;
+      };
+      console.log("TIDDDD", Strophe.tid);
       this.xhr = this._newXHR();
     }
     else{
@@ -3962,11 +3994,32 @@ Strophe.Bosh.prototype = {
      */
     _buildBody: function ()
     {
+        // console.log("StropheRID", this.rid);
+        // console.log("LOCALRID", localStorage.rid);
+        // if(localStorage.rid){
+        //   if(this.rid < parseInt(localStorage.rid, 10)){
+        //     this.rid = parseInt(localStorage.rid, 10) - 1;
+        //   }
+        //   else{
+        //     localStorage.rid = this.rid;
+        //   }
+        // }
+        // else{
+        //   localStorage.rid = this.rid;
+        // }
+        
+        if(localStorage.rid){
+          if(this.rid < parseInt(localStorage.rid, 10)){
+            this.rid = parseInt(localStorage.rid, 10);
+          }
+        }
+        this.rid = this.rid + 1;
+        localStorage.rid = this.rid;
         var bodyWrap = $build('body', {
-            rid: this.rid++,
+            rid: this.rid,
             xmlns: Strophe.NS.HTTPBIND
         });
-
+        
         if (this.sid !== null) {
             bodyWrap.attrs({sid: this.sid});
         }
@@ -3983,6 +4036,16 @@ Strophe.Bosh.prototype = {
     {
         this.rid = Math.floor(Math.random() * 4294967295);
         this.sid = null;
+    },
+
+    /** PrivateFunction: _reset
+     *  Reset the connection.
+     *
+     *  This function is called by the reset function of the Strophe Connection
+     */
+    _reattach: function ()
+    {
+        //this.rid = Math.floor(Math.random() * 4294967295);
     },
 
     /** PrivateFunction: _connect
@@ -4236,12 +4299,17 @@ Strophe.Bosh.prototype = {
             }
             delete this._conn._data;
             this._conn._data = [];
-            this._requests.push(
-                new Strophe.Request(body.tree(),
-                                    this._onRequestStateChange.bind(
-                                        this, this._conn._dataRecv.bind(this._conn)),
-                                    body.tree().getAttribute("rid")));
-            this._processRequest(this._requests.length - 1);
+            if(Strophe.tid == localStorage.tid){
+              this._requests.push(
+                  new Strophe.Request(body.tree(),
+                                      this._onRequestStateChange.bind(
+                                          this, this._conn._dataRecv.bind(this._conn)),
+                                      body.tree().getAttribute("rid")));
+              this._processRequest(this._requests.length - 1);
+            }
+            else{
+              this._requests = [];
+            }
         }
 
         if (this._requests.length > 0) {
@@ -4262,6 +4330,9 @@ Strophe.Bosh.prototype = {
             }
         }
       }
+      else{
+        this._requests = [];
+      }
     },
 
     /** PrivateFunction: _onRequestStateChange
@@ -4278,6 +4349,7 @@ Strophe.Bosh.prototype = {
      */
     _onRequestStateChange: function (func, req)
     {
+        if(Strophe.tid == localStorage.tid){
         Strophe.debug("request id " + req.id +
                       "." + req.sends + " state changed to " +
                       req.xhr.readyState);
@@ -4359,6 +4431,11 @@ Strophe.Bosh.prototype = {
                 this._throttledRequestHandler();
             }
         }
+      }
+      else{
+        this._removeRequest(req);
+        this._requests =[];
+      }
     },
 
     /** PrivateFunction: _processRequest
@@ -4567,7 +4644,6 @@ Strophe.Bosh.prototype = {
         if (pres) {
             body.cnode(pres.tree());
         }
-
         var req = new Strophe.Request(body.tree(),
                                       this._onRequestStateChange.bind(
                                           this, this._conn._dataRecv.bind(this._conn)),
@@ -4774,6 +4850,11 @@ Strophe.Websocket.prototype = {
      *  Is not needed by WebSockets.
      */
     _reset: function ()
+    {
+        return;
+    },
+
+    _reattach: function ()
     {
         return;
     },
