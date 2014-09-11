@@ -13,7 +13,7 @@
 							$scope.presentBargain++;
 						});
 					}
-					else{
+					if(!$scope.presentBargain){
 						$scope.clearLocalStorage();
 					}
 				};
@@ -32,9 +32,11 @@
 				};
 
 				$scope.clearLocalStorage = function(){
-					$localStorage.$reset();
-					delete localStorage.rid;
-					delete localStorage.tid;
+					localStorage.clear();
+					$scope.presentBargain = 0;
+					$scope.threads = {};
+					$scope.chatServer = {};
+					$scope.connection = null;
 				};
 
 				$scope.$on('Active-chat-Changed', function($event, activeThread){
@@ -253,11 +255,19 @@
 
 				$scope.$on('CloseUserChat', function(event, threadId){
 					$scope.presentBargain = $scope.presentBargain - 1;
-					delete $scope.threads[threadId];
-					delete $scope.$storage.threads[threadId];
-					$scope.$apply(function (){
-                   		$scope.$storage = $localStorage;
-                	});
+					console.log("ActiveBargains", $scope.presentBargain);
+					if($scope.presentBargain){
+						delete $scope.threads[threadId];
+						delete $scope.$storage.threads[threadId];
+						$scope.$apply(function (){
+	                   		$scope.$storage = $localStorage;
+	                	});
+					}
+					else{
+						delete $scope.threads[threadId];
+						delete $scope.$storage.threads[threadId];
+						$scope.clearLocalStorage();
+					}
 				});
 
 				$scope.$on('ChatMessageChanged', function(event){
