@@ -3,20 +3,32 @@
 	angular.module('PaytmIM')
 		.controller('AppCtrl', ['$scope', '$rootScope', '$localStorage', '$timeout', 'CoreService', 'ChatServerService', 'UtilService', '$window',
 			function ($scope, $rootScope, $localStorage, $timeout, CoreService, ChatServerService, UtilService, $window) {
-				$scope.init = function(){
+				$scope.initialize = function(){
+					$scope.presentBargain = 0;
 					$scope.$storage = $localStorage;
+					$scope.threads = $scope.$storage.threads ? $scope.$storage.threads : {};
+					$scope.chatServer = $scope.$storage.chatServer ? $scope.$storage.chatServer : {};
 					if($scope.$storage && $scope.$storage.chatServer && $scope.$storage.threads){
+						angular.forEach($scope.$storage.threads, function(value, index){
+							$scope.presentBargain++;
+						});
+					}
+					else{
+						$scope.clearLocalStorage();
+					}
+				};
+
+				$scope.init = function(){
+					$scope.initialize();
+					if($scope.presentBargain){
 						$scope.chatServer = $scope.$storage.chatServer;
 						$scope.chatServer.tid = UtilService.guid();
 						localStorage.tid = $scope.chatServer.tid;
 						$scope.stropheAttach($scope.$storage.chatServer.jid, $scope.$storage.chatServer.sid, parseInt(localStorage.rid, 10), $scope.chatServer.tid);
 					}
 					else{
-						$localStorage.$reset();
-						$scope.presentBargain = 0;
+						$scope.clearLocalStorage();
 					}
-					$scope.threads = $scope.$storage.threads ? $scope.$storage.threads : {};
-					$scope.chatServer = $scope.$storage.chatServer ? $scope.$storage.chatServer : {};
 				};
 
 				$scope.clearLocalStorage = function(){
@@ -33,37 +45,23 @@
 				})
 
 				$(window).bind('blur', function(event) {
-					console.log("BLUR");
-					$(window).bind('focus', function() { 
+					//console.log("BLUR");
+					$(window).bind('focus', function() {
 						if($scope.$storage.chatServer && $scope.chatServer.tid != localStorage.tid ){
 							$scope.chatSDK = null;
-							$scope.connection.reattach($scope.$storage.chatServer.sid);
-							$scope.chatSDK = CoreService.chatSDK($scope.connection);
+							if($scope.connection){
+								$scope.connection.reattach($scope.$storage.chatServer.sid);
+								$scope.chatSDK = CoreService.chatSDK($scope.connection);
+							}
 							$scope.chatServer = $scope.$storage.chatServer;
 							$scope.chatServer.tid = UtilService.guid();
 							localStorage.tid = $scope.chatServer.tid;
 							$scope.stropheAttach($scope.$storage.chatServer.jid, $scope.$storage.chatServer.sid, parseInt(localStorage.rid, 10), $scope.chatServer.tid);
-							console.log("FOCUS");
+							//console.log("FOCUS");
 						}
 						$(window).unbind('focus');
 					});
 				});
-
-				// $(window).bind('blur', function(event) {
-				// 	console.log("BLUR");
-				// 	$(window).bind('focus', function() { 
-				// 		if($scope.$storage.chatServer && $scope.chatServer.tid != localStorage.tid ){
-				// 			$scope.chatSDK = null;
-				// 			$scope.chatServer = {}; //$scope.$storage.chatServer;
-				// 			$scope.$storage.chatServer ={};
-				// 			$scope.loginToChatServer();
-				// 			//$scope.stropheConnection($scope.chatServer.plustxtId, $scope.chatServer.password);
-				// 			//$scope.stropheAttach($scope.$storage.chatServer.jid, $scope.$storage.chatServer.sid, parseInt(localStorage.rid, 10) + 1, $scope.chatServer.tid, true);
-				// 			console.log("FOCUS");
-				// 		}
-				// 		$(window).unbind('focus');
-				// 	});
-				// });
 
 				$scope.loginToChatServer = function(threadId, productId){
 					ChatServerService.login.query({
@@ -86,7 +84,7 @@
 						else{
 						}
 					}, function failure(error){
-
+						// If required put error message for the user.
 					})
 				};
 
@@ -101,10 +99,6 @@
 				};
 
 				$scope.stropheAttach = function(jid, sid, rid, tid){
-					// $scope.chatServer.tid = UtilService.guid();
-					// localStorage.tid = $scope.chatServer.tid;
-					console.log("RID FOR ATTACH", rid);
-					// localStorage.rid = rid;
 					$scope.$storage.chatServer = $scope.chatServer;
 					var connection = new Strophe.Connection(Globals.AppConfig.StropheConnect);
 					connection.attach(jid, sid, rid, tid, function (status) {
@@ -132,7 +126,7 @@
 						case Strophe.Status.ERROR:
 							break;
 						case Strophe.Status.CONNFAIL:
-							//$localStorage.$reset();
+							//$scope.clearLocalStorage();
 							break;
 						case Strophe.Status.AUTHFAIL:
 							break;
@@ -177,12 +171,13 @@
 						}
 						
 					}, function failure(error){
-						alert('Failure');
+						// if required put the error message for the user.
 					})
 				};
 				
 
 				$scope.initiateBargain = function(productId){
+					$scope.initialize();
 					if($scope.presentBargain < Globals.AppConfig.MaxThreads){
 						var productPresent = false;
 						angular.forEach($scope.threads, function(value, index){
@@ -256,11 +251,14 @@
 			        }
 				};
 
-				$scope.removeThread = function(threadId){
+				$scope.$on('CloseUserChat', function(event, threadId){
 					$scope.presentBargain = $scope.presentBargain - 1;
 					delete $scope.threads[threadId];
 					delete $scope.$storage.threads[threadId];
-				};
+					$scope.$apply(function (){
+                   		$scope.$storage = $localStorage;
+                	});
+				});
 
 				$scope.$on('ChatMessageChanged', function(event){
 					$scope.$apply(function (){

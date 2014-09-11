@@ -152,7 +152,7 @@ angular.module('PaytmIM').factory('CoreService', [ '$rootScope', 'UtilService', 
                     //console.log("All Pending Messages Count:" + "0");
                 }
                 else{
-                    //console.log("All Pending Messages Count : " + offmessageArray.length);
+                    console.log("All Pending Messages Count : " + offmessageArray.length);
                     for (var i=0 ; i < offmessageArray.length ; i++){
                         //console.log('tegoid ' + offmessageArray[i]['tegoid']+ ' mid '+offmessageArray[i]['mid']+ 'body '+ offmessageArray[i]['body'])
                         jid=offmessageArray[i]['tegoid']+'@' + Globals.AppConfig.ChatHostURI;
@@ -168,8 +168,10 @@ angular.module('PaytmIM').factory('CoreService', [ '$rootScope', 'UtilService', 
                         //   utility.comn.consoleLogger(' local cache message status upadted from mid '+mid);
                        UtilService.updateMessageStatus(mid, 0, Strophe.getNodeFromJid(jid), strTimeMii);
                        // For sending the closed message
-                       if(body == Globals.AppConfig.CloseChatMessage){
-                         $rootScope.$broadcast("Close-User-Chat", Strophe.getNodeFromJid(jid));
+                       // For sending the closed message
+                       var closeChatMesg = {CLSCHAT : "chat closed" };
+                       if(body == JSON.stringify(closeChatMesg)){
+                         $rootScope.$broadcast("CloseUserChat", thread);
                        }
                     }
                 }

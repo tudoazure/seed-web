@@ -12,9 +12,8 @@
               if(scope.chatData.messages[0]){
                 try{
                   scope.product = JSON.parse(scope.chatData.messages[0].txt);
-                  console.log(scope.product)
                 }
-                catch(exception){}
+                catch(e){}
               }
             };
 
@@ -51,7 +50,6 @@
             
             scope.$watch(scope.getHeight, function(newValue, oldValue) {
                 scope.windowHeight = newValue;
-                console.log('height', scope.windowHeight);
                 scope.setWindowTop(newValue);
             });
 
@@ -74,7 +72,6 @@
                 scope.submitMessage(true);
                 scope.chatData.status = 'closed';
                 scope.isClosed = !scope.isClosed;
-                scope.removeThread(scope.thread);
             };
 
             scope.submitMessage = function(isCloseMessage){
