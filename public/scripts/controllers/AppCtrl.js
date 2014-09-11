@@ -32,6 +32,7 @@
 				};
 
 				$scope.clearLocalStorage = function(){
+					$localStorage.$reset();
 					localStorage.clear();
 					$scope.presentBargain = 0;
 					$scope.threads = {};
