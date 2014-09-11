@@ -87,27 +87,70 @@
         };
 
         parseTime = function(dateString){
+			// var parseDate = new Date();
+			// if(dateString){
+			// 	var date = new Date (dateString);
+			// 	var momentDate = moment(dateString);
+			// 	parseDate = momentDate.format("h:mm a");
+			// }
 			var parseDate = new Date();
 			if(dateString){
-				var date = new Date (dateString);
-				var momentDate = moment(dateString);
-				parseDate = momentDate.format("h:mm a");
-			}
+				var d1 = new Date (dateString * 1000);
+				var hrs = d1.getHours();
+				var minute = d1.getMinutes();
+				var dd = "AM";
+			    var h = hrs;
+			    if (h >= 12) {
+			        h = hrs-12;
+			        dd = "PM";
+			    }
+			    if (h == 0) {
+			        h = 12;
+			    }
+					parseDate = hrs +':'+ minute + ' '+dd;
+				}
 			return parseDate;
 		};
 
 		parseDate = function(dateString){
+			// var parseDate = new Date();
+			// if(dateString){
+			// 	var date = new Date (dateString);
+			// 	var momentDate = moment(dateString);
+			// 	parseDate = momentDate.format("DD MMM YYYY");
+			// }
+			var month = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug','Sep', 'Oct','Nov', 'Dec'];
 			var parseDate = new Date();
 			if(dateString){
-				var date = new Date (dateString);
-				var momentDate = moment(dateString);
-				parseDate = momentDate.format("DD MMM YYYY");
+				var d1 = new Date (dateString * 1000);
+				var date = d1.getDate();
+				var month = month[d1.getMonth()];
+				var year = d1.getFullYear();
+				parseDate = date +' '+ month + ' '+year;
 			}
+			console.log('parseDate', parseDate)
 			return parseDate;
 		};
 
 		var getLocalTime = function(ts) {
-			return moment.unix(ts).format("Do MMM  h:mm A");
+			var month = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug','Sep', 'Oct','Nov', 'Dec'];
+			var d1 = new Date(ts * 1000);
+			var date = d1.getDate();
+			var month = month[d1.getMonth()];
+			var hrs = d1.getHours();
+			var minute = d1.getMinutes();
+			var dd = "AM";
+		    var h = hrs;
+		    if (h >= 12) {
+		        h = hrs-12;
+		        dd = "PM";
+		    }
+		    if (h == 0) {
+		        h = 12;
+		    }
+			var dateString = date +' '+ month + ' '+h + ':' + minute + ' ' +dd; 
+			return dateString;
+			// return moment.unix(ts).format("Do MMM  h:mm A");
         };
 
         var milliTimeToString = function(inMilliSeconds) {
