@@ -33,7 +33,7 @@
 
             var w = angular.element($window);
             scope.getHeight = function() {
-                return w.innerHeight();
+                return w[0].innerHeight;
             };
             scope.windowHeight = scope.getHeight();
             
@@ -41,8 +41,16 @@
             scope.setWindowTop = function(height){
                var topHeight = (height -315) + "px";
               var minTopHeight = (height -38) +"px";
-              element.find(".chat").css('top', topHeight);
-              element.find(".minChat").css('top', minTopHeight);
+              var chatDiv = element[0].getElementsByClassName('chat');
+              var minChatDiv = element[0].getElementsByClassName('minChat');
+              if(minChatDiv && minChatDiv.length){
+                minChatDiv[0].style.top = minTopHeight;
+              }
+              if(chatDiv && chatDiv.length){
+                chatDiv[0].style.top = topHeight;
+              }
+              // element.find(".chat").css('top', topHeight);
+              // element.find(".minChat").css('top', minTopHeight);
             };
 
             scope.setWindowTop(scope.windowHeight);

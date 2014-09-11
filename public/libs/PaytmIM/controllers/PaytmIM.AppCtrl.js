@@ -1,8 +1,8 @@
 (function (angular){
 	"use strict;"
 	angular.module('PaytmIM')
-		.controller('PaytmIM.AppCtrl', ['$scope', '$rootScope', '$localStorage', '$timeout', 'PaytmIM.CoreService', 'PaytmIM.ChatServerService', 'PaytmIM.UtilService',
-			function ($scope, $rootScope, $localStorage, $timeout, CoreService, ChatServerService, UtilService) {
+		.controller('PaytmIM.AppCtrl', ['$scope', '$rootScope', '$localStorage', '$timeout', 'PaytmIM.CoreService', 'PaytmIM.ChatServerService', 'PaytmIM.UtilService', '$window',
+			function ($scope, $rootScope, $localStorage, $timeout, CoreService, ChatServerService, UtilService, $window) {
 				$scope.initialize = function(){
 					$scope.presentBargain = 0;
 					$scope.$storage = $localStorage;
@@ -54,9 +54,10 @@
 	              	$scope.$storage.threads[activeThread].isActiveChat = true;
 				})
 
-				$(window).bind('blur', function(event) {
-					//console.log("BLUR");
-					$(window).bind('focus', function() {
+				angular.element($window).bind('blur', function(event) {
+					console.log("BLUR");
+					angular.element($window).bind('focus', function() {
+						console.log('i m focus');
 						if($scope.$storage.chatServer && $scope.chatServer.tid != localStorage.tid ){
 							$scope.initialize();
 							$scope.chatSDK = null;
@@ -68,12 +69,12 @@
 							$scope.chatServer.tid = UtilService.guid();
 							localStorage.tid = $scope.chatServer.tid;
 							$scope.stropheAttach($scope.$storage.chatServer.jid, $scope.$storage.chatServer.sid, parseInt(localStorage.rid, 10), $scope.chatServer.tid);
-							//console.log("FOCUS");
+							console.log("FOCUS");
 							$scope.$apply(function (){
 		                   		$scope.$storage = $localStorage;
 		                	});
 						}
-						$(window).unbind('focus');
+						angular.element($window).unbind('focus');
 					});
 				});
 
