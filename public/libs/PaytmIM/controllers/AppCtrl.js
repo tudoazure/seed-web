@@ -18,6 +18,8 @@
 					}
 				};
 
+				
+
 				$scope.init = function(){
 					$scope.initialize();
 					if($scope.presentBargain){
@@ -66,10 +68,10 @@
 					});
 				});
 
-				$scope.loginToChatServer = function(threadId, productId){
+				$scope.loginToChatServer = function(threadId, bargainObj){
 					ChatServerService.login.query({
-						email : Globals.AppConfig.LoginEmail,
-						access_token : Globals.AppConfig.AccessToken,
+						email : bargainObj.user.login, // Globals.AppConfig.LoginEmail,
+						access_token :bargainObj.user.accessToken, // Globals.AppConfig.AccessToken,
 						device_type : "web",
 						device_id : navigator.userAgent,
 						utype : "Normal",
@@ -82,7 +84,7 @@
 							$scope.chatServer.plustxtId = response.data['tego_id'] + "@" + Globals.AppConfig.ChatHostURI;
 							$scope.chatServer.password = response.data['password'] + response.data['tego_id'].substring(0, 3);
 							$scope.chatServer.connected = false;
-							$scope.stropheConnection($scope.chatServer.plustxtId, $scope.chatServer.password, threadId, productId);
+							$scope.stropheConnection($scope.chatServer.plustxtId, $scope.chatServer.password, threadId, bargainObj);
 						}
 						else{
 						}
@@ -91,13 +93,13 @@
 					})
 				};
 
-				$scope.stropheConnection = function(login, password, threadId, productId){
+				$scope.stropheConnection = function(login, password, threadId, bargainObj){
 					$scope.chatServer.tid = UtilService.guid();
 					localStorage.tid = $scope.chatServer.tid;
 					$scope.$storage.chatServer = $scope.chatServer;
 					var connection = new Strophe.Connection(Globals.AppConfig.StropheConnect);
 					connection.connect(login, password, $scope.chatServer.tid, function (status) {
-						$scope.conectionStateChange(connection, status, threadId, productId);
+						$scope.conectionStateChange(connection, status, threadId, bargainObj);
 					})
 				};
 
@@ -109,7 +111,7 @@
 					})
 				};
 
-				$scope.conectionStateChange = function(connection, status, threadId, productId){
+				$scope.conectionStateChange = function(connection, status, threadId, bargainObj){
 					console.log("StropheStatus : ", status);
 					$scope.connection = connection;
 					switch(status){
@@ -117,7 +119,7 @@
 							break;
 						case Strophe.Status.CONNECTED:
 							$scope.chatSDK = CoreService.chatSDK(connection);
-							$scope.connectedState(threadId, productId);
+							$scope.connectedState(threadId, bargainObj);
 							break;
 						case Strophe.Status.DISCONNECTING:
 							break;
@@ -140,12 +142,12 @@
 					}
 				};
 
-				$scope.connectedState = function(threadId, productId){
+				$scope.connectedState = function(threadId, bargainObj){
 					$scope.chatServer.connected = true;
 					$scope.chatServer['sid'] = $scope.connection._proto.sid;
 					$scope.chatServer['jid'] = $scope.connection.jid;
 					if(threadId){
-						$scope.getMerchantAgent(threadId, productId);
+						$scope.getMerchantAgent(threadId, bargainObj);
 					}
 					$scope.$storage.chatServer = $scope.chatServer;
 					$scope.chatSDK.connection.addHandler($scope.chatSDK.ping_handler, null, "iq", null, "ping1"); 
@@ -155,7 +157,7 @@
 				    $scope.chatSDK.connection.addHandler($scope.chatSDK.on_message, null, "message", "chat");
 				};
 
-				$scope.getMerchantAgent = function(threadId, productId){
+				$scope.getMerchantAgent = function(threadId, bargainObj){
 					ChatServerService.getAgent.query({
 						session_id : $scope.chatServer.sessionId,
 						merchant_id : 1
@@ -164,7 +166,7 @@
 						 	$scope.threads[threadId].agent = Globals.AppConfig.AgentId;//response.data.agent;
 						 	$scope.threads[threadId].user = $scope.chatServer.tegoId;
 						 	$scope.threads[threadId].status = "open";
-						 	var msg = Globals.AppConfig.ProductMessage[productId];
+						 	var msg = UtilService.stringifyEmitUnicode($scope.parseProduct(bargainObj))//Globals.AppConfig.ProductMessage[productId];
 						 	$scope.sendInitialMessage(threadId, msg);
 						 	$scope.presentBargain++;
 						}
@@ -178,8 +180,32 @@
 					})
 				};
 				
+				$scope.parseProduct = function(bargainObj){
+					var productObj = bargainObj.product;
+					var user = bargainObj.user;
+					var product = {
+						description: productObj.bargain_name,
+						email: user.login,
+						first_name : '',
+						id : productObj.product_id.toString() ,
+						image_url : productObj.image_url ,
+						last_name : '',
+						merchant_id: productObj.merchant.merchant_id.toString() ,
+						name : productObj.merchant.merchant_name,
+						price : productObj.offer_price.toString(),
+						product_url : productObj.url,
+						user_id: user.user_id.toString()
+					};
 
-				$scope.initiateBargain = function(productId){
+					var productMsg = {
+						PRDCNTXT : product
+					};
+					return productMsg;
+
+				};
+
+				$scope.initiateBargain = function(bargainObj){
+					var productId = bargainObj.product.product_id;
 					$scope.initialize();
 					if($scope.presentBargain < Globals.AppConfig.MaxThreads){
 						var productPresent = false;
@@ -200,10 +226,10 @@
 								$scope.threads[threadId].messages = [];
 								$scope.threads[threadId].agent = "";
 								if($scope.chatServer && $scope.chatServer.connected){
-									$scope.getMerchantAgent(threadId, productId);
+									$scope.getMerchantAgent(threadId, bargainObj);
 								}
 								else{
-									$scope.loginToChatServer(threadId, productId);
+									$scope.loginToChatServer(threadId, bargainObj);
 								}
 							}
 						}
@@ -213,6 +239,10 @@
 						alert(message);
 					}
 				};
+
+				$scope.$on('initiateBargain', function(event, bargainObj){
+					$scope.initiateBargain(bargainObj);
+				})
 
 				$scope.sendInitialMessage = function(threadId, msgText){
 		              var timeInMilliSecond = UtilService.getTimeInLongString();

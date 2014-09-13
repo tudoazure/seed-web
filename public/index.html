@@ -39,6 +39,7 @@
     <script src="libs/PaytmIM/services/UtilService.js"></script>
 
     <script src="scripts/app.js"></script>
+    <script src="scripts/controllers/productPreviewCtrl.js"></script>
    
    
     
@@ -46,20 +47,20 @@
 </head>
 
 <body>
-    <div class="container" >
+    <div class="container" ng-controller="productPreviewCtrl" >
         <div class="row">
             <div class="col-md-12" align="center" style="margin-top:50px">
-                <button class="btn btn-default btn-success" ng-click="initiateBargain(198034)">Bargain Product 1</button>
+                <button class="btn btn-default btn-success" ng-click="bargain(187474)">Bargain Product 1</button>
             </div>
         </div>
         <div class="row">
             <div class="col-md-12" align="center" style="margin-top:50px">
-                <button class="btn btn-default btn-success" ng-click="initiateBargain(198045)">Bargain Product 2</button>
+                <button class="btn btn-default btn-success" ng-click="bargain(198045)">Bargain Product 2</button>
             </div>
         </div>
         <div class="row">
             <div class="col-md-12" align="center" style="margin-top:50px">
-                <button class="btn btn-default btn-success" ng-click="initiateBargain(187474)">Bargain Product 3</button>
+                <button class="btn btn-default btn-success" ng-click="bargain(198034)">Bargain Product 3</button>
             </div>
         </div>
         <div class="row">
@@ -72,9 +73,11 @@
     <div ng-view ="" class="container" align="center"></div>
 
     <!-- THIS IS WHAT YOU NEED TO ADD ON YOUR INDEX.HTML -->
-    <div class="chat-container" ng-controller="AppCtrl">
-        <div ng-repeat="(thread, chatData) in $storage.threads">
-            <chat-box></chat-box>
+    <div ng-controller="AppCtrl">
+        <div ng-if="$storage && $storage.threads" class="chat-container" >
+            <div ng-repeat="(thread, chatData) in $storage.threads">
+                <chat-box></chat-box>
+            </div>
         </div>
     </div>
 

@@ -5,7 +5,7 @@
         function($rootScope, $timeout, UtilService, $window, $sce) {
       return {
         restrict: 'EA',
-        templateUrl: 'scripts/directives/chat-box/chat-box-template.html',
+        templateUrl: 'libs/PaytmIM/directives/chat-box/chat-box-template.html',
         scope: false,
         link: function(scope, element, attrs) {
             scope.getProduct = function(){
