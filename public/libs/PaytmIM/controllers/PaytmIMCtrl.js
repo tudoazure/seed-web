@@ -1,7 +1,7 @@
 (function (angular){
 	"use strict;"
 	angular.module('PaytmIM')
-		.controller('AppCtrl', ['$scope', '$rootScope', '$localStorage', '$timeout', 'CoreService', 'ChatServerService', 'UtilService', '$window',
+		.controller('PaytmIMCtrl', ['$scope', '$rootScope', '$localStorage', '$timeout', 'CoreService', 'ChatServerService', 'UtilService', '$window',
 			function ($scope, $rootScope, $localStorage, $timeout, CoreService, ChatServerService, UtilService, $window) {
 				$scope.initialize = function(){
 					$scope.presentBargain = 0;

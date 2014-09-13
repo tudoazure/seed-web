@@ -20,16 +20,17 @@
     <!-- Main CSS -->
     <link href="styles/chat.css" rel="stylesheet">
 
-    <script src="libs/PaytmIM/vendor/jquery.js"></script>
+    <script src="libs/vendor/jquery.js"></script>
+    <script src="libs/vendor/angular.js"></script>
+    <script src="libs/vendor/angular-resource.js"></script>
+    <script src="libs/vendor/angular-route.js"></script>
+    <script src="libs/vendor/ngStorage.min.js"></script>
+    <script src="libs/vendor/strophe.js"></script>
+    <script src="libs/vendor/moment.js"></script>
+
     <script src="libs/PaytmIM/config/AppConfig.js"></script>
-    <script src="libs/PaytmIM/vendor/angular.js"></script>
-    <script src="libs/PaytmIM/vendor/angular-resource.js"></script>
-    <script src="libs/PaytmIM/vendor/angular-route.js"></script>
-    <script src="libs/PaytmIM/vendor/ngStorage.min.js"></script>
-    <script src="libs/PaytmIM/vendor/strophe.js"></script>
-    <script src="libs/PaytmIM/vendor/moment.js"></script>
     <script src="libs/PaytmIM/module.js"></script>
-    <script src="libs/PaytmIM/controllers/AppCtrl.js"></script>
+    <script src="libs/PaytmIM/controllers/PaytmIMCtrl.js"></script>
     <script src="libs/PaytmIM/directives/angular-enter/angular-enter.js"></script>
     <script src="libs/PaytmIM/directives/angular-focus-blur/angular-focus-blur.js"></script>
     <script src="libs/PaytmIM/directives/chat-box/chat-box.js"></script>
@@ -73,7 +74,7 @@
     <div ng-view ="" class="container" align="center"></div>
 
     <!-- THIS IS WHAT YOU NEED TO ADD ON YOUR INDEX.HTML -->
-    <div ng-controller="AppCtrl">
+    <div ng-controller="PaytmIMCtrl">
         <div ng-if="$storage && $storage.threads" class="chat-container" >
             <div ng-repeat="(thread, chatData) in $storage.threads">
                 <chat-box></chat-box>
