@@ -1,0 +1,66 @@
+
+<div class="chat-wrapper" style="height:516px;" ng-show="!isClosed">
+	<!-- <div  style=""> -->
+		<div class="chat" ng-show="!collapse" ng-click="setFocus()" ng-class="$storage.threads[thread].isActiveChat ? 'activeChat': ''">
+		    <div class="chatheader">Baragin with  {{product.PRDCNTXT.name}}
+		    	<i class="fa fa-times pointer" style="float:right;" ng-click="closeChat()"></i>
+		    	<i class="fa fa-minus minus pointer" style="float:right;" ng-click="minimize()"></i>
+		    </div>
+		    <div class="productHeader" ng-show="!detailView">
+		    	<div class="imgDiv fl pointer" ng-click="gotoProduct(product)">
+		    		<img class="image" ng-src="{{product.PRDCNTXT.image_url}}"/>
+		    	
+		    	</div>
+		    	<div class="name fr pointer" align="left" title="{{product.PRDCNTXT.description}}" ng-click="gotoProduct(product)">			{{product.PRDCNTXT.description}}
+		    	</div>
+		    	<div class="dwnArrow fr pointer" ng-click="detailView = !detailView"></div>
+		    </div>
+		     <div class="productHeader h60" ng-show="detailView" ng-click="detailView = !detailView">
+		    	<div class="imgDiv fl pointer" ng-click="gotoProduct(product)">
+		    		<img class="image pointer" ng-src="{{product.PRDCNTXT.image_url}}"/>
+		    	
+		    	</div>
+		    	<div class="detail fr pointer" align="left" title="{{product.PRDCNTXT.description}}" ng-click="gotoProduct(product)">			{{product.PRDCNTXT.description}}
+		    			<br/>
+		    			{{product.PRDCNTXT.price}}
+		    	</div>
+		    	<div class="clear"></div>
+		    	<div class="upArrow fr pointer"></div>
+		    </div>
+		    <div class="text clear" chat-scroll-down ng-class="detailView ? 'p60' : ''">
+		    	<div ng-repeat="message in chatData.messages">
+		    		<div ng-if="!message.isProductDetails && !message.isCloseMessage" class='bubble  reporter bgblue' ng-class="chatData.user == message.sender ? 'user-mesg1' : 'bubble--alt agent-mesg1'">
+		    			<div class='chat-name' ng-if='!message.isPromoCode'>{{message.txt}}</div>
+		    			<div ng-if="message.isPromoCode" align="left">
+		    				<ul>
+		    					<li>{{parseJSON(message.txt).PRMCODE.message}} 
+		    					<li> <span class='bold'> Code: </span> <a ng-click='applyPromo(message.txt)' class='pointer'>{{parseJSON(message.txt).PRMCODE.promocode}}</a> </li>
+		    					<li> <span class='bold'> Qty: </span> {{parseJSON(message.txt).PRMCODE.minQuantity}} </li>
+		    					<li> <span class='bold'> Validity: </span> {{parseJSON(message.txt).PRMCODE.validity }}</li>
+		    					<li>
+		    						<a ng-click='applyPromo(message.txt)' class='pointer'>Apply</a>
+	    						</li>
+		    			 </div>
+		    		</div>
+		    		<div align="center" class="clear messageTime" ng-if="message.sender != chatData.user && !message.isCloseMessage" style='font-size:9px' >{{parseDate(message.sent_on)}}</div>
+		    		<div align="center" class="clear messageTime italic" ng-if="message.isCloseMessage">
+		    			<div ng-if="message.sender == chatData.user">You closed the conversation</div>
+		    			<div ng-if="message.sender != chatData.user">Agent closed the conversation</div>
+		    		</div>
+		    	</div>
+		    </div>
+		    <div class="chatbox">
+		    	<textarea type="text" placeholder="Send a message"  ng-enter="submitMessage()" ng-model="userMessage" ng-focus="setFocus()" ng-disabled="chatData.status =='closed'" class="textArea"></textarea>
+		    </div>
+		</div>
+		<div class=" activeChat chat minChat" ng-show="collapse">
+			<div class="chatheader h38 p3">
+					<img class="image  fl" ng-src="{{product.PRDCNTXT.image_url}}"/>
+				<div class="name fl minName">{{product.PRDCNTXT.description}}</div>
+		    	<i class="fa fa-times fr p8"></i>
+		    	<i class="fa fa-minus minus fr p8" ng-click="minimize()"></i>
+			</div>
+			
+	    </div>
+	<!-- </div> -->
+<!-- </div> -->

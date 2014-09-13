@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" ng-app="PaytmIM">
+<html lang="en" ng-app="PaytmApp">
 
 <head>
     <meta charset="utf-8">
@@ -20,29 +20,33 @@
     <!-- Main CSS -->
     <link href="styles/chat.css" rel="stylesheet">
 
-    <script src="scripts/vendor/jquery.js"></script>
-    <script src="scripts/config/AppConfig.js"></script>
-    <script src="scripts/vendor/angular.js"></script>
-    <script src="scripts/vendor/angular-resource.js"></script>
-    <script src="scripts/vendor/angular-route.js"></script>
-    <script src="scripts/vendor/ngStorage.min.js"></script>
-    <script src="scripts/vendor/strophe.js"></script>
-    <script src="scripts/vendor/moment.js"></script>
-
+    <script src="libs/PaytmIM/vendor/jquery.js"></script>
+    <script src="libs/PaytmIM/config/AppConfig.js"></script>
+    <script src="libs/PaytmIM/vendor/angular.js"></script>
+    <script src="libs/PaytmIM/vendor/angular-resource.js"></script>
+    <script src="libs/PaytmIM/vendor/angular-route.js"></script>
+    <script src="libs/PaytmIM/vendor/ngStorage.min.js"></script>
+    <script src="libs/PaytmIM/vendor/strophe.js"></script>
+    <script src="libs/PaytmIM/vendor/moment.js"></script>
+    <script src="libs/PaytmIM/module.js"></script>
+    <script src="libs/PaytmIM/controllers/AppCtrl.js"></script>
+    <script src="libs/PaytmIM/directives/angular-enter/angular-enter.js"></script>
+    <script src="libs/PaytmIM/directives/angular-focus-blur/angular-focus-blur.js"></script>
+    <script src="libs/PaytmIM/directives/chat-box/chat-box.js"></script>
+    <script src="libs/PaytmIM/directives/chat-scroll-down/chat-scroll-down.js"></script>
+    <script src="libs/PaytmIM/services/CoreService.js"></script>
+    <script src="libs/PaytmIM/services/ChatServerService.js"></script>
+    <script src="libs/PaytmIM/services/UtilService.js"></script>
 
     <script src="scripts/app.js"></script>
-    <script src="scripts/controllers/AppCtrl.js"></script>
-    <script src="scripts/directives/angular-enter/angular-enter.js"></script>
-    <script src="scripts/directives/angular-focus-blur/angular-focus-blur.js"></script>
-    <script src="scripts/directives/chat-box/chat-box.js"></script>
-    <script src="scripts/directives/chat-scroll-down/chat-scroll-down.js"></script>
-    <script src="scripts/services/CoreService.js"></script>
-    <script src="scripts/services/ChatServerService.js"></script>
-    <script src="scripts/services/UtilService.js"></script>
+   
+   
+    
+
 </head>
 
-<body ng-controller="AppCtrl">
-    <div class="container">
+<body>
+    <div class="container" >
         <div class="row">
             <div class="col-md-12" align="center" style="margin-top:50px">
                 <button class="btn btn-default btn-success" ng-click="initiateBargain(198034)">Bargain Product 1</button>
@@ -64,6 +68,15 @@
             </div>
         </div>
     </div>
+
     <div ng-view ="" class="container" align="center"></div>
+
+    <!-- THIS IS WHAT YOU NEED TO ADD ON YOUR INDEX.HTML -->
+    <div class="chat-container" ng-controller="AppCtrl">
+        <div ng-repeat="(thread, chatData) in $storage.threads">
+            <chat-box></chat-box>
+        </div>
+    </div>
+
 </body>
 </html>
