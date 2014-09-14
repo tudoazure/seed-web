@@ -1,7 +1,7 @@
 (function (angular){
 	"use strict;"
 
-	angular.module('PaytmIM').factory('ChatServerService', ['$resource', function ($resource) {
+	angular.module('PaytmIM').factory('PaytmIM.ChatServerService', ['$resource', function ($resource) {
 
 		var ChatServerService;
 		var manageReqPacketTransform = function(Obj) {

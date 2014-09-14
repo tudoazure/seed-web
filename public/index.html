@@ -10,35 +10,33 @@
     <link rel="shortcut icon" href="">
 
     <link href='//fonts.googleapis.com/css?family=Open+Sans:300,400,500,600,700' rel='stylesheet' type='text/css'>
-
     <!-- In case cdn is not working. Use below and comment above CDN Path. -->
-    <link href="styles/bootstrap.min.css" rel="stylesheet">
-
+    <link href="libs/PaytmIM/styles/bootstrap.min.css" rel="stylesheet">
     <!-- Font-Awesome for Icons -->
     <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
-    
-    <!-- Main CSS -->
-    <link href="styles/chat.css" rel="stylesheet">
+    <!-- Chat CSS -->
+    <link href="libs/PaytmIM/styles/chat.css" rel="stylesheet">
 
-    <script src="libs/vendor/jquery.js"></script>
-    <script src="libs/vendor/angular.js"></script>
-    <script src="libs/vendor/angular-resource.js"></script>
-    <script src="libs/vendor/angular-route.js"></script>
-    <script src="libs/vendor/ngStorage.min.js"></script>
-    <script src="libs/vendor/strophe.js"></script>
-    <script src="libs/vendor/moment.js"></script>
-
-    <script src="libs/PaytmIM/config/AppConfig.js"></script>
-    <script src="libs/PaytmIM/module.js"></script>
-    <script src="libs/PaytmIM/controllers/PaytmIMCtrl.js"></script>
+    <!-- THESE ARE SDK RELATED FILES. -->
+    <script src="libs/PaytmIM/vendor/jquery.js"></script>
+    <script src="libs/PaytmIM/vendor/angular.js"></script>
+    <script src="libs/PaytmIM/vendor/angular-resource.js"></script>
+    <script src="libs/PaytmIM/vendor/angular-route.js"></script>
+    <script src="libs/PaytmIM/vendor/ngStorage.min.js"></script>
+    <script src="libs/PaytmIM/vendor/strophe.js"></script>
+    <script src="libs/PaytmIM/vendor/moment.js"></script>
+    <script src="libs/PaytmIM/config/PaytmIM.Config.js"></script>
+    <script src="libs/PaytmIM/PaytmIM.module.js"></script>
+    <script src="libs/PaytmIM/controllers/PaytmIM.AppCtrl.js"></script>
     <script src="libs/PaytmIM/directives/angular-enter/angular-enter.js"></script>
     <script src="libs/PaytmIM/directives/angular-focus-blur/angular-focus-blur.js"></script>
     <script src="libs/PaytmIM/directives/chat-box/chat-box.js"></script>
     <script src="libs/PaytmIM/directives/chat-scroll-down/chat-scroll-down.js"></script>
-    <script src="libs/PaytmIM/services/CoreService.js"></script>
-    <script src="libs/PaytmIM/services/ChatServerService.js"></script>
-    <script src="libs/PaytmIM/services/UtilService.js"></script>
+    <script src="libs/PaytmIM/services/PaytmIM.CoreService.js"></script>
+    <script src="libs/PaytmIM/services/PaytmIM.ChatServerService.js"></script>
+    <script src="libs/PaytmIM/services/PaytmIM.UtilService.js"></script>
 
+    <!-- THESE ARE PAYTM WEB RELATED FILES. -->
     <script src="scripts/app.js"></script>
     <script src="scripts/controllers/productPreviewCtrl.js"></script>
    
@@ -51,21 +49,21 @@
     <div class="container" ng-controller="productPreviewCtrl" >
         <div class="row">
             <div class="col-md-4" align="left" style="margin-top:50px">
-                <a  ng-click="gotoProduct('/product1')">Product 1</a>
+                <a  href="javascript:void(0)" ng-click="gotoProduct('/product1')">Product 1</a>
             </div>
             <div class="col-md-4" align="left" style="margin-top:50px">
-                 <a ng-click="gotoProduct('/product2')">Product 2</a>
+                 <a  href="javascript:void(0)"  ng-click="gotoProduct('/product2')">Product 2</a>
             </div>
             <div class="col-md-4" align="left" style="margin-top:50px">
-                 <a ng-click="gotoProduct('/product3')">Product 3</a>
+                 <a  href="javascript:void(0)"  ng-click="gotoProduct('/product3')">Product 3</a>
             </div>
         </div>
     </div>
 
     <div ng-view ="" class="container" align="center"></div>
 
-    <!-- THIS IS WHAT YOU NEED TO ADD ON YOUR INDEX.HTML -->
-    <div ng-controller="PaytmIMCtrl">
+    <!-- THIS IS WHAT YOU NEED TO ADD ON YOUR INDEX.HTML/JADE -->
+    <div ng-controller="PaytmIM.AppCtrl">
         <div ng-if="$storage && $storage.threads" class="chat-container" >
             <div ng-repeat="(thread, chatData) in $storage.threads">
                 <chat-box></chat-box>

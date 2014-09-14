@@ -1,6 +1,6 @@
 (function (angular){
 "use strict;"
-angular.module('PaytmIM').factory('CoreService', [ '$rootScope', 'UtilService', '$localStorage',
+angular.module('PaytmIM').factory('PaytmIM.CoreService', [ '$rootScope', 'PaytmIM.UtilService', '$localStorage',
     function ( $rootScope, UtilService, $localStorage ) {
 
     var readACKO = [];

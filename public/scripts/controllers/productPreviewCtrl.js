@@ -18,23 +18,28 @@
 				};
 
 				$scope.$on('PaytmIM.NavigateToProduct', function(event, product){
-					alert("TODO: Navigate to product link if the location is different");
+					//Handle: Application of promocode on UI.
+					alert("Product Link Clicked");
 				});
 
 				$scope.$on('PaytmIM.ApplyPromoCode', function(event, promoCodeObj){
-					alert("TODO: Handle application of promo code");
+					//Handle: Application of promocode on UI.
+					alert("Application of promo code clicked");
 				});
 
 				$scope.$on('PaytmIM.NoMerchantAgent', function(event){
-					alert("TODO: Handle when no merchant agent is available for chat");
+					//Handle: Show message on UI.
+					alert("No merchant agent is available for chat");
 				});
 
 				$scope.$on('PaytmIM.ProductAlreadyBargaining', function(event, product){
-					alert("TODO: Handle if a user clicks on bargain again while chat is going on for the product");
+					//Handle: Show message on UI.
+					alert("Product Already under bargain");
 				});
 
 				$scope.$on('PaytmIM.MaxBargainLimitReached', function(event, maxBargainLimit){
-					alert("TODO: Handle Max Bargain Limit Reached");
+					//Handle: Show message on UI.
+					alert("Maximum concurrent bargain limit reached.");
 				});
 
 				// This is user detail section
@@ -65,6 +70,5 @@
 					$rootScope.$broadcast('Clear-Local-Storage');
 				}
 			}
-
     	]);
 })(angular);

@@ -1,8 +1,8 @@
 (function (angular){
 	"use strict;"
 	angular.module('PaytmIM')
-		.controller('PaytmIMCtrl', ['$scope', '$rootScope', '$localStorage', '$timeout', 'CoreService', 'ChatServerService', 'UtilService', '$window',
-			function ($scope, $rootScope, $localStorage, $timeout, CoreService, ChatServerService, UtilService, $window) {
+		.controller('PaytmIM.AppCtrl', ['$scope', '$rootScope', '$localStorage', '$timeout', 'PaytmIM.CoreService', 'PaytmIM.ChatServerService', 'PaytmIM.UtilService',
+			function ($scope, $rootScope, $localStorage, $timeout, CoreService, ChatServerService, UtilService) {
 				$scope.initialize = function(){
 					$scope.presentBargain = 0;
 					$scope.$storage = $localStorage;
@@ -229,9 +229,7 @@
 							}
 						})
 						if(productPresent){
-							$scope.applyPromo =function(promoObj){
-								$rootScope.$broadcast('PaytmIM.ProductAlreadyBargaining', bargainObj.product);
-							};
+							$rootScope.$broadcast('PaytmIM.ProductAlreadyBargaining', bargainObj.product);
 						}
 						else{
 							var threadId = productId + "-" + UtilService.guid();

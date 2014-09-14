@@ -1,7 +1,7 @@
 (function (angular){
 	"use strict;"
 
-	angular.module('PaytmIM').factory('UtilService', ['$rootScope', '$localStorage', function ($rootScope, $localStorage) {
+	angular.module('PaytmIM').factory('PaytmIM.UtilService', ['$rootScope', '$localStorage', function ($rootScope, $localStorage) {
 		var ua = navigator.userAgent.toLowerCase();
 		var keyStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
 		if (ua.indexOf(" chrome/") >= 0 || ua.indexOf(" firefox/") >= 0 || ua.indexOf(' gecko/') >= 0) {

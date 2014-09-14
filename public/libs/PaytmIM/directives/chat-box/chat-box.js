@@ -1,8 +1,8 @@
 (function (angular){
   'use strict';
   angular.module('PaytmIM')
-    .directive('chatBox', ['$rootScope', '$timeout', 'UtilService', '$window', '$sce',
-        function($rootScope, $timeout, UtilService, $window, $sce) {
+    .directive('chatBox', ['PaytmIM.UtilService', '$window', '$sce',
+        function(UtilService, $window, $sce) {
       return {
         restrict: 'EA',
         templateUrl: 'libs/PaytmIM/directives/chat-box/chat-box-template.html',
