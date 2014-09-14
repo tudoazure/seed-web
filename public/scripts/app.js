@@ -16,7 +16,7 @@
 				controller : ''
 			})
 			.otherwise({
-				redirectTo: '/'
+				redirectTo: '/product1'
 			});
 	}])
 })(angular);
