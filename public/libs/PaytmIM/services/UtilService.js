@@ -183,7 +183,9 @@
 		                value.messages = messageArray;
 		            }
 		        }
-	        })
+
+	        });
+	        localStorage["ngStorage-threads"] = JSON.stringify($localStorage.threads);
 	    };
 
 	    var updateMessageStatusAsRead = function(inotherpartytigoid, intime){
@@ -240,6 +242,7 @@
 	        if($localStorage.threads[threadId]){
 	        	$localStorage.threads[threadId].messages.push(messageobj);
 	        	$rootScope.$broadcast("ChatMessageChanged");
+	        	localStorage["ngStorage-threads"] = JSON.stringify($localStorage.threads);
 	        }
 	        else{
 	        	alert("Thread not found");

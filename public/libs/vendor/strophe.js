@@ -1367,7 +1367,6 @@ Strophe = {
      */
     warn: function (msg)
     {
-        console.log("WARN", msg);
         this.log(this.LogLevel.WARN, msg);
     },
 
@@ -1379,7 +1378,6 @@ Strophe = {
      */
     error: function (msg)
     {
-        console.log(msg);
         this.log(this.LogLevel.ERROR, msg);
     },
 
@@ -1391,7 +1389,6 @@ Strophe = {
      */
     fatal: function (msg)
     {
-        console.log("FATAL", msg);
         this.log(this.LogLevel.FATAL, msg);
     },
 
@@ -3992,21 +3989,7 @@ Strophe.Bosh.prototype = {
      *    A Strophe.Builder with a <body/> element.
      */
     _buildBody: function ()
-    {
-        // console.log("StropheRID", this.rid);
-        // console.log("LOCALRID", localStorage.rid);
-        // if(localStorage.rid){
-        //   if(this.rid < parseInt(localStorage.rid, 10)){
-        //     this.rid = parseInt(localStorage.rid, 10) - 1;
-        //   }
-        //   else{
-        //     localStorage.rid = this.rid;
-        //   }
-        // }
-        // else{
-        //   localStorage.rid = this.rid;
-        // }
-        
+    {        
         if(localStorage.rid){
           if(this.rid < parseInt(localStorage.rid, 10)){
             this.rid = parseInt(localStorage.rid, 10);

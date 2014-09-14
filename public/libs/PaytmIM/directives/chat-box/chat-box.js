@@ -45,12 +45,7 @@
               element.find(".minChat").css('top', minTopHeight);
             };
 
-            scope.setWindowTop(scope.windowHeight)
-           
-
-            scope.$on('messagesC', function(){
-              scope.getProduct();
-            });
+            scope.setWindowTop(scope.windowHeight);
             
             
             scope.$watch(scope.getHeight, function(newValue, oldValue) {

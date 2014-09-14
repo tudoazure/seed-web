@@ -17,18 +17,27 @@
 					$location.path(link);
 				};
 
-				$scope.$on('PaytmIM.gotoProduct', function(event, product){
-					// alert('I reached @ product');
+				$scope.$on('PaytmIM.NavigateToProduct', function(event, product){
+					alert("TODO: Navigate to product link if the location is different");
 				});
 
-				$scope.$on('PaytmIM.applyPromo', function(event, product){
-					// alert('Apply promo');
+				$scope.$on('PaytmIM.ApplyPromoCode', function(event, promoCodeObj){
+					alert("TODO: Handle application of promo code");
 				});
 
-				$scope.$on('PaytmIM.NoMerchant', function(event, product){
-					// alert('No Merchant Available');
+				$scope.$on('PaytmIM.NoMerchantAgent', function(event){
+					alert("TODO: Handle when no merchant agent is available for chat");
 				});
 
+				$scope.$on('PaytmIM.ProductAlreadyBargaining', function(event, product){
+					alert("TODO: Handle if a user clicks on bargain again while chat is going on for the product");
+				});
+
+				$scope.$on('PaytmIM.MaxBargainLimitReached', function(event, maxBargainLimit){
+					alert("TODO: Handle Max Bargain Limit Reached");
+				});
+
+				// This is user detail section
 				$scope.getUserDetail = function(){
 					var user = {
 						login : "webbargain@paytm.com",
@@ -43,7 +52,6 @@
 						user: $scope.getUserDetail(),
 						product : $scope.getProductMessageObj(productId)
 					}
-					console.log('bargainObj', bargainObj);
 					return bargainObj;
 				};
 
@@ -52,6 +60,7 @@
 					$rootScope.$broadcast('initiateBargain', bargainObj);
 				};
 
+				// Call this if a user is explicitly signing off from Paytm.
 				$scope.clearLocalStorage = function(){
 					$rootScope.$broadcast('Clear-Local-Storage');
 				}

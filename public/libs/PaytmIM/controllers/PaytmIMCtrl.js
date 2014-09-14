@@ -18,8 +18,6 @@
 					}
 				};
 
-				
-
 				$scope.init = function(){
 					$scope.initialize();
 					if($scope.presentBargain){
@@ -40,6 +38,9 @@
 					$scope.threads = {};
 					$scope.chatServer = {};
 					$scope.connection = null;
+					$timeout(function (){
+		                $scope.$storage = $localStorage;
+		            });
 				};
 
 				$scope.$on('Clear-Local-Storage', function(){
@@ -57,6 +58,7 @@
 					//console.log("BLUR");
 					$(window).bind('focus', function() {
 						if($scope.$storage.chatServer && $scope.chatServer.tid != localStorage.tid ){
+							$scope.initialize();
 							$scope.chatSDK = null;
 							if($scope.connection){
 								$scope.connection.reattach($scope.$storage.chatServer.sid);
@@ -67,6 +69,9 @@
 							localStorage.tid = $scope.chatServer.tid;
 							$scope.stropheAttach($scope.$storage.chatServer.jid, $scope.$storage.chatServer.sid, parseInt(localStorage.rid, 10), $scope.chatServer.tid);
 							//console.log("FOCUS");
+							$scope.$apply(function (){
+		                   		$scope.$storage = $localStorage;
+		                	});
 						}
 						$(window).unbind('focus');
 					});
@@ -74,8 +79,8 @@
 
 				$scope.loginToChatServer = function(threadId, bargainObj){
 					ChatServerService.login.query({
-						email : bargainObj.user.login, // Globals.AppConfig.LoginEmail,
-						access_token :bargainObj.user.accessToken, // Globals.AppConfig.AccessToken,
+						email : bargainObj.user.login,
+						access_token :bargainObj.user.accessToken,
 						device_type : "web",
 						device_id : navigator.userAgent,
 						utype : "Normal",
@@ -128,7 +133,8 @@
 						case Strophe.Status.DISCONNECTING:
 							break;
 						case Strophe.Status.DISCONNECTED:
-							$scope.loginToChatServer();
+							$scope.clearLocalStorage();
+							//$scope.loginToChatServer();
 							break;
 						case Strophe.Status.AUTHENTICATING:
 							break;
@@ -145,6 +151,12 @@
 							break;
 					}
 				};
+
+				$scope.disconnectXMPPConnection = function() {
+				    $scope.connection.options.sync = true; // Switch to using synchronous requests.
+				    $scope.connection.flush();
+				    $scope.connection.disconnect();
+  				};
 
 				$scope.connectedState = function(threadId, bargainObj){
 					$scope.chatServer.connected = true;
@@ -167,20 +179,17 @@
 						merchant_id : 1
 					}, function success(response){
 						if(response && !response.status && response.data){
-						 	$scope.threads[threadId].agent = Globals.AppConfig.AgentId;//response.data.agent;
-						 	$scope.threads[threadId].user = $scope.chatServer.tegoId;
-						 	$scope.threads[threadId].status = "open";
+						 	var agentId = Globals.AppConfig.AgentId;//response.data.agent;
 						 	var msg = UtilService.stringifyEmitUnicode($scope.parseProduct(bargainObj))//Globals.AppConfig.ProductMessage[productId];
-						 	$scope.sendInitialMessage(threadId, msg);
+						 	$scope.sendInitialMessage(threadId, bargainObj.product.product_id, agentId, msg);
 						 	$scope.presentBargain++;
 						}
 						else{
-							delete $scope.threads[threadId];
-							$rootScope.$broadcast('PaytmIM.NoMerchant', promoObj);
+							$rootScope.$broadcast('PaytmIM.NoMerchantAgent');
 						}
 						
 					}, function failure(error){
-						// if required put the error message for the user.
+						$rootScope.$broadcast('PaytmIM.NoMerchantAgent');
 					})
 				};
 				
@@ -220,16 +229,13 @@
 							}
 						})
 						if(productPresent){
-							alert("Product already exist for bargain");
+							$scope.applyPromo =function(promoObj){
+								$rootScope.$broadcast('PaytmIM.ProductAlreadyBargaining', bargainObj.product);
+							};
 						}
 						else{
 							var threadId = productId + "-" + UtilService.guid();
 							if(!$scope.threads[threadId]){
-								
-								$scope.threads[threadId] = {};
-								$scope.threads[threadId].productId = productId;
-								$scope.threads[threadId].messages = [];
-								$scope.threads[threadId].agent = "";
 								if($scope.chatServer && $scope.chatServer.connected){
 									$scope.getMerchantAgent(threadId, bargainObj);
 								}
@@ -240,8 +246,9 @@
 						}
 					}
 					else{
-						var message = "Only " + Globals.AppConfig.MaxThreads + " concurrent bargains are allowed."
-						alert(message);
+						$scope.applyPromo =function(promoObj){
+							$rootScope.$broadcast('PaytmIM.MaxBargainLimitReached', Globals.AppConfig.MaxThreads);
+						};
 					}
 				};
 
@@ -249,7 +256,7 @@
 					$scope.initiateBargain(bargainObj);
 				})
 
-				$scope.sendInitialMessage = function(threadId, msgText){
+				$scope.sendInitialMessage = function(threadId, productId, agentId, msgText){
 		              var timeInMilliSecond = UtilService.getTimeInLongString();
 		              var strTimeMii = timeInMilliSecond.toString();
 		              var messageId = $scope.chatServer.tegoId  + "-c-" + strTimeMii;
@@ -259,7 +266,7 @@
 		                id: "",
 		                last_ts: strTimeMii.substring(0, 10),
 		                mid: mid,
-		                receiver: $scope.threads[threadId].agent ,
+		                receiver: agentId ,
 		                sender: $scope.chatServer.tegoId,
 		                sent_on: strTimeMii.substring(0, 10),
 		                state: -1,
@@ -268,8 +275,13 @@
 		                isPromoCode : false,
 		                isCloseMessage : false
 		              }
-		              $scope.threads[threadId].messages.push(message);
-		              $scope.$broadcast('messagesC');
+		              var thread = {};
+		              thread.user = $scope.chatServer.tegoId;
+		              thread.status = "open";
+		              thread.messages = [message];
+		              thread.productId = productId;
+		              thread.agent = agentId;
+		              $scope.threads[threadId] = thread;
 		              $scope.$storage.threads = $scope.threads;
 		              var jId = $scope.threads[threadId].agent + "@" + Globals.AppConfig.ChatHostURI;
 		              $scope.sendMessage(message, jId, timeInMilliSecond, mid);
@@ -300,18 +312,19 @@
 	                	});
 					}
 					else{
-						delete $scope.threads[threadId];
-						delete $scope.$storage.threads[threadId];
-						$scope.clearLocalStorage();
+						$scope.disconnectXMPPConnection();
+						// delete $scope.threads[threadId];
+						// delete $scope.$storage.threads[threadId];
+						// $scope.clearLocalStorage();
 					}
 				});
 
 				$scope.gotoProduct = function(product){
-	              $rootScope.$broadcast('PaytmIM.gotoProduct', product);
+	              $rootScope.$broadcast('PaytmIM.NavigateToProduct', product);
 	            };
 
 	            $scope.applyPromo =function(promoObj){
-	              $rootScope.$broadcast('PaytmIM.applyPromo', promoObj);
+	              $rootScope.$broadcast('PaytmIM.ApplyPromoCode', promoObj);
 	            };
 
 				$scope.$on('ChatMessageChanged', function(event){
