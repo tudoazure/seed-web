@@ -16,8 +16,8 @@
 				};
 				$scope.getUserDetail = function(){
 					var user = {
-						login : "anshuman.gothwal@gmail.com",
-						accessToken : "aa3cc7c2-372f-4fa6-9ea8-867d74dc1b45",
+						login : "webbargain@paytm.com",
+						accessToken : "aceb388d-87f2-4781-9f3b-b36c8d1d4e79",
 						user_id : '11065430',
 					}
 					return user;
