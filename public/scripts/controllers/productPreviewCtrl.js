@@ -18,7 +18,7 @@
 				};
 
 				$scope.$on('PaytmIM.NavigateToProduct', function(event, product){
-					//Handle: Application of promocode on UI.
+					//Handle: Application of navigation of product on UI.
 					alert("Product Link Clicked");
 				});
 
@@ -45,8 +45,8 @@
 				// This is user detail section
 				$scope.getUserDetail = function(){
 					var user = {
-						login : "anshuman.gothwal@gmail.com",
-						accessToken : "aa3cc7c2-372f-4fa6-9ea8-867d74dc1b45",
+						login : "paytmuser1@mailinator.com",
+						accessToken : "3de7a0ff-13e1-4421-b3a2-043f708a5e9e",
 						user_id : '11065430',
 					}
 					return user;
