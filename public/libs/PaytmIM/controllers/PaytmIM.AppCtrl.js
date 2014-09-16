@@ -197,6 +197,19 @@
 				$scope.parseProduct = function(bargainObj){
 					var productObj = bargainObj.product;
 					var user = bargainObj.user;
+					var color = '', size = '';
+					if(productObj.long_rich_desc && productObj.long_rich_desc.length){
+						angular.forEach(productObj.long_rich_desc, function(value, index){
+							if(value.title && value.title.toLowerCase() == 'description' ){
+								if(value.attributes){
+									color = value.attributes.hasOwnProperty('Color') ? value.attributes.Color : '';
+									size = value.attributes.hasOwnProperty('Size') ? value.attributes.Size : '';
+									console.log('color',color);
+									console.log('size',size);
+								}
+							}
+						})
+					}
 					var product = {
 						description: productObj.bargain_name,
 						email: user.login,
@@ -209,7 +222,9 @@
 						price : productObj.offer_price ? productObj.offer_price.toString() : '',
 						actual_price : productObj.actual_price ? productObj.actual_price.toString() : '',
 						product_url : productObj.url,
-						user_id: user.user_id ? user.user_id.toString() : ''
+						user_id: user.user_id ? user.user_id.toString() : '',
+						size : size,
+						color: color
 					};
 
 					var productMsg = {

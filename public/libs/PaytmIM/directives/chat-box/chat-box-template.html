@@ -16,17 +16,30 @@
 	    	<div class="dwnArrow fr pointer" ng-click="detailView = !detailView" ng-class="product.PRDCNTXT.description ? '' : 'bottom0'"></div>
 	    </div>
 
-		<div class="productHeader h60" ng-show="detailView" ng-click="detailView = !detailView">
-			<div class="imgDiv fl pointer" ng-click="gotoProduct(product)">
+		<div class="detailHeader" ng-show="detailView" ng-click="detailView = !detailView">
+			<div class="imgDiv fl pointer mt10" ng-click="gotoProduct(product)">
 				<img class="image pointer" ng-src="{{product.PRDCNTXT.image_url}}"/>
 			</div>
 			<div class=" fr pointer detailDiv" align="left" title="{{product.PRDCNTXT.description}}" ng-click="gotoProduct(product)">	
 					<div class="detail"> {{product.PRDCNTXT.description}} </div>
-					<div><span class="strike">Rs {{product.PRDCNTXT.actual_price}} </span> 
-					<span> Rs {{product.PRDCNTXT.price}} </span>  </div>
 			</div>
 			<div class="clear"></div>
 			<div class="upArrow fr pointer"></div>
+			<div class="clear detail2">
+				<div class="fl w50">
+					<span class="bold"> Price: </span>
+					<span class="strike"> Rs {{product.PRDCNTXT.actual_price}} </span> 
+					<span ng-show='product.PRDCNTXT.color' class="bold"> 
+					Color: </span>
+					<span>{{product.PRDCNTXT.color}} </span>
+				</div>
+				<div class="fr w50"> 
+					<span class="bold">Offer Price:</span>
+					<span> Rs {{product.PRDCNTXT.price}} </span> 
+				 	<span ng-show='product.PRDCNTXT.size' class="bold">Size:</span>
+				 	<span>{{product.PRDCNTXT.size}}</span> 
+			 	</div>
+			</div>
 		</div>
 
 	    <div class="text clear" chat-scroll-down ng-class="detailView ? 'p60' : ''">
