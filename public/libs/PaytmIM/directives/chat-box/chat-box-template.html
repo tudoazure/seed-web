@@ -44,9 +44,12 @@
 	    <div class="text-area-class clear" chat-scroll-down ng-class="detailView ? 'p60' : ''">
 	    	<div ng-repeat="message in chatData.messages">
 	    		<div ng-if="!message.isProductDetails && !message.isCloseMessage" class='bubble-chat  reporter bgblue' ng-class="chatData.user == message.sender ? 'bubble--alt user-mesg1' : 'agent-mesg1'">
-	    			<div class='chat-name' ng-if='!message.isPromoCode'>{{message.txt}}
-	    			<span ng-if="chatData.user == message.sender" style="font-size: 8px;">{{getMesgState(message.state)}}</span>
+	    			<div class='chat-name' ng-if='!message.isPromoCode'>{{message.txt}}</div>
+	    			<div align="right" style="font-size: 8px;">
+	    			<span ng-if="chatData.user == message.sender">{{getMesgState(message.state)}}</span>
+	    			<i class="fa  fa-check"></i>
 	    			</div>
+	    			
 	    			<div ng-if="message.isPromoCode" align="left">
 	    				<ul>
 	    					<li>{{parseJSON(message.txt).PRMCODE.message}} 
