@@ -36,13 +36,13 @@ angular.module('PaytmIM').factory('PaytmIM.CoreService', [ '$rootScope', 'PaytmI
             
             on_message: function(message) {
                 //console.log("CoreService @on_message called :");
-                var threadId = $(message).find("thread").text();
-                var body = $(message).find("html > body");
-                //console.log("INCOMING MESSAGE", $(message)[0]);
-                if (body.length === 0) {
-                    body = $(message).find('body');
-                    if (body.length > 0) {
-                        body = body.text().trim();
+                var messageObj = xml2json.parser(message.outerHTML).message;
+                var threadId = messageObj.thread;
+                var body = messageObj.html;
+                if (!body){
+                    body = messageObj.body;
+                    if (body) {
+                        body = body.trim();
                     } else {
                         body = null;
                     }
@@ -62,12 +62,12 @@ angular.module('PaytmIM').factory('PaytmIM.CoreService', [ '$rootScope', 'PaytmI
                 }
                 //console.log("CoreService  @on_message - Message Text :", body);
                 var response = {};
-                response['full_jid'] = $(message).attr('from');
-                response['id'] = $(message).attr('id');
+                response['full_jid'] = messageObj.from;
+                response['id'] = messageObj.id;
                 response['threadId'] = threadId;
-                var jid = $(message).attr('from');
-                var messageID = $(message).attr('id');
-                response['composing'] = $(message).find('composing');
+                var jid = messageObj.from;
+                var messageID = messageObj.id;
+                //response['composing'] = $(message).find('composing');
                 if(body){
                     response['body'] = body.trim();
                 }
@@ -85,17 +85,17 @@ angular.module('PaytmIM').factory('PaytmIM.CoreService', [ '$rootScope', 'PaytmI
                 var timeInMilliSecond = UtilService.getTimeInLongString()
                 if (DeliveryMessgae != -1) {
                     // code for update/ inform the user regarding delivered or read information
-                    var delivered = $(message).find("delivered");
+                    var delivered = messageObj.delivered; //$(message).find("delivered");
                     try {
-                        var deliveryAckID = $(delivered).text();
+                        var deliveryAckID = messageObj.delivered;
                     } 
                     catch (err) {
                     
                     }
 
-                    var read = $(message).find("read");
+                    var read = messageObj.read;//$(message).find("read");
                     try {
-                        var readAckID = $(read).text();
+                        var readAckID = messageObj.read;
                     } 
                     catch (err) {
                     
@@ -112,9 +112,9 @@ angular.module('PaytmIM').factory('PaytmIM.CoreService', [ '$rootScope', 'PaytmI
                     }
                 }
                 else if(readMessageAcknow != -1){
-                    var read = $(message).find("read");
+                    var read = messageObj.read;
                     try {
-                        var readAckID = $(read).text();
+                        var readAckID = messageObj.read;
                     } 
                     catch (err) {
                     }

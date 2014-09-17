@@ -55,9 +55,7 @@
 				})
 
 				angular.element($window).bind('blur', function(event) {
-					console.log("BLUR");
 					angular.element($window).bind('focus', function() {
-						console.log('i m focus');
 						if($scope.$storage.chatServer && $scope.chatServer.tid != localStorage.tid ){
 							$scope.initialize();
 							$scope.chatSDK = null;
@@ -69,7 +67,6 @@
 							$scope.chatServer.tid = UtilService.guid();
 							localStorage.tid = $scope.chatServer.tid;
 							$scope.stropheAttach($scope.$storage.chatServer.jid, $scope.$storage.chatServer.sid, parseInt(localStorage.rid, 10), $scope.chatServer.tid);
-							console.log("FOCUS");
 							$scope.$apply(function (){
 		                   		$scope.$storage = $localStorage;
 		                	});
