@@ -78,14 +78,14 @@ font-size: 10px;
 	height:238px;
 }
 .user-mesg1{
+	margin-right: 2%;
+	background-color: #E7E6EB; 
+	
+}
+.agent-mesg1{
 	margin-left: 2%;
 	background-color: #00BBF9;
 	color: #fff;
-}
-.agent-mesg1{
-	margin-right: 2%;
-	background-color: #E7E6EB;
-	color: 
 }
 .bubble {
 	background-image: linear-gradient(bottom, rgb(0, 187, 249) 25%, rgb(0, 187, 240) 100%);
