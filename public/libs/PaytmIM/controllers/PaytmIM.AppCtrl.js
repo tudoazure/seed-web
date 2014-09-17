@@ -271,7 +271,7 @@
 		                txt: msgText,
 		                isProductDetails : true,
 		                isPromoCode : false,
-		                isCloseMessage : false
+		                isCloseMessage : false,
 		              }
 		              var thread = {};
 		              thread.user = $scope.chatServer.tegoId;
@@ -282,20 +282,17 @@
 		              $scope.threads[threadId] = thread;
 		              $scope.$storage.threads = $scope.threads;
 		              var jId = $scope.threads[threadId].agent + "@" + Globals.AppConfig.ChatHostURI;
-		              $scope.sendMessage(message, jId, timeInMilliSecond, mid);
+		              $scope.sendMessage(message, jId, timeInMilliSecond, mid, threadId);
 		        };
 
-		        $scope.sendMessage = function(body, jid, timeInMilliSecond, mid){
+		        $scope.sendMessage = function(body, jid, timeInMilliSecond, mid, threadId){
 					if(body !== ""){
-			            var message = $msg({to: jid, "type": "chat", "id": mid}).c('body').t(body).up().c('active', {xmlns: "http://jabber.org/protocol/chatstates"}).up()
-			            .c('meta').c('acl', {deleteafter: "-1", canforward: "1", candownload: "1"});
 		             	var to = Strophe.getDomainFromJid($scope.chatSDK.connection.jid);
              			var ping = $iq({to: to,type: "get",id: "ping1"}).c("ping", {xmlns: "urn:xmpp:ping"});
              			$scope.chatSDK.connection.send(ping);
-      //        			UtilService.updateMessageStatus(mid, -1, Strophe.getNodeFromJid(jid), timeInMilliSecond);
-      //        			var jid_id = $scope.chatSDK.jid_to_id(jid);
-      //        			var tigo_id = Strophe.getNodeFromJid(jid);
-						// $scope.chatSDK.send_Read_Notification(jid, jid_id, tigo_id);
+              			var jid_id = $scope.chatSDK.jid_to_id(jid);
+             			var tigo_id = Strophe.getNodeFromJid(jid);
+						$scope.chatSDK.send_Read_Notification(jid, jid_id, tigo_id);
 			        }
 				};
 
