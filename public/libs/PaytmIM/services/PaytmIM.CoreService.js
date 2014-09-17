@@ -130,7 +130,7 @@ angular.module('PaytmIM').factory('PaytmIM.CoreService', [ '$rootScope', 'PaytmI
                     var messageId = $localStorage.chatServer.tegoId + "-dv-" + strTimeMii;
                     var mid = messageId.toString();
                     // Sending delivery acknowledment back.
-                    var message2 = $msg({to: response['full_jid'], "type": "chat", "id": mid}).c('delivered').t(messageID).up().c('meta');
+                    var message2 = $msg({to: response['full_jid'], "type": "chat", "id": mid}).c('delivered').t(messageID).up().c('thread').t(threadId).up().c('meta');
                     // $('#mid-'+messageID).html('Delivered&nbsp;');
                     on_Message_Update_Chat(response);
                     connection.send(message2);
