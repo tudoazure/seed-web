@@ -1,9 +1,8 @@
 Dependencies for this PaytmIM SDK
 
 1) Angular
-3) Angular-Resource
-3) JQuery
-4) Moment
+2) Angular-Resource
+3) xml2json
 5) Angular Storage: https://github.com/gsklee/ngStorage
 6) Strophe: (USE THIS VERSION ONLY IN VENDOR FOLDER)
 
@@ -19,7 +18,9 @@ Agents:
 
 
 Users:
-1) login : "paytmuser1@mailinator.com",
+1) login : "webbargain@paytm.com",
+	accessToken : "aceb388d-87f2-4781-9f3b-b36c8d1d4e79"
+2) login : "paytmuser1@mailinator.com",
 	accessToken : "3de7a0ff-13e1-4421-b3a2-043f708a5e9e"
-2) login : "paytmuser2@mailinator.com",
+3) login : "paytmuser2@mailinator.com",
 	accessToken : "2f801d52-660e-4e13-8eb2-2c5421966807"
