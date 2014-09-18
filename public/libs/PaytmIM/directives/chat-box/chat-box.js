@@ -79,7 +79,8 @@
                 body = UtilService.stringifyEmitUnicode(body, true);
                 scope.userMessage = body;
                 scope.submitMessage(true);
-                scope.chatData.status = 'closed';
+                // scope.chatData.status = 'closed';
+                scope.isClosed = !scope.isClosed;
               }
               else{
                 scope.isClosed = !scope.isClosed;
