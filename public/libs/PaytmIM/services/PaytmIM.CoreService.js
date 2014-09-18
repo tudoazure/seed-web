@@ -168,7 +168,6 @@ angular.module('PaytmIM').factory('PaytmIM.CoreService', [ '$rootScope', 'PaytmI
                         //   utility.comn.consoleLogger(' local cache message status upadted from mid '+mid);
                        UtilService.updateMessageStatus(mid, 0, Strophe.getNodeFromJid(jid), strTimeMii);
                        // For sending the closed message
-                       // For sending the closed message
                        var closeChatMesg = {CLSCHAT : "chat closed" };
                        if(body == JSON.stringify(closeChatMesg)){
                          $rootScope.$broadcast("CloseUserChat", thread);
