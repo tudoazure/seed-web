@@ -87,7 +87,7 @@
 	/*color: #fff;*/
 }
 .bubble-chat {
-	/*background-image: linear-gradient(bottom, rgb(231, 230, 235) 25%, rgb(231, 230, 230) 100%);
+	background-image: linear-gradient(bottom, rgb(231, 230, 235) 25%, rgb(231, 230, 230) 100%);
 	background-image: -o-linear-gradient(bottom, rgb(231, 230, 235) 25%, rgb(231, 230, 230) 100%);
 	background-image: -moz-linear-gradient(bottom, rgb(231, 230, 235) 25%, rgb(231, 230, 230) 100%);
 	background-image: -webkit-linear-gradient(bottom, rgb(231, 230, 235) 25%, rgb(231, 230, 230) 100%);
@@ -98,13 +98,14 @@
 		left top,
 		color-stop(0.25, rgb(231, 230, 235)),
 		color-stop(1, rgb(231, 230, 230))
-	);*/
+	);
 	
 	border: solid 1px rgb(231, 230, 235);
 	border-radius: 12px;
 	box-sizing: border-box;
 	clear: both;
-	float: right;/*float: left;*/
+	/*float: right;*/
+  float: left;
 	margin-bottom: 12px;
 	padding: 5px 10px;
 	position: relative;
@@ -112,8 +113,8 @@
 	max-width: 85%;
 	word-wrap: break-word;
 	line-height: 1.38em;
-	  margin-left: 2%;
-	  /*background-color: #E7E6EB;*/
+  margin-left: 2%;
+  background-color: #E7E6EB;
 }
 
 .bubble-chat:before, .bubble-chat:after {
@@ -165,7 +166,8 @@
 		color-stop(1, rgb(231, 230, 230))
 	);*/
 	border: solid 1px rgb(0, 187, 249);
-	float: left; /*float: right;*/
+	/*float: left;*/ 
+  float: right;
 }
 
 .bubble--alt:before {
@@ -274,7 +276,7 @@
 }
 .messageTime {
 	margin-right: 10%;
-	float: left;
+	float: right;
 	margin-top: -10px;
 	margin-bottom: 10px;
 }

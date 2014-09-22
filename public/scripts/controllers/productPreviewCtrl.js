@@ -45,8 +45,8 @@
 				// This is user detail section
 				$scope.getUserDetail = function(){
 					var user = {
-						login : "paytmuser1@mailinator.com",
-						accessToken : "3de7a0ff-13e1-4421-b3a2-043f708a5e9e",
+						login : "webbargain@paytm.com",
+						accessToken : "aceb388d-87f2-4781-9f3b-b36c8d1d4e79",
 						user_id : '11065430',
 					}
 					return user;
