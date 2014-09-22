@@ -19,7 +19,12 @@
 
 				$scope.$on('PaytmIM.NavigateToProduct', function(event, product){
 					//Handle: Application of navigation of product on UI.
-					alert("Product Link Clicked");
+					console.log("Product Link Clicked");
+				});
+
+				$scope.$on('PaytmIM.ShowLoading', function(event, isLoading){
+					//Handle: Show and hide loading. Loading should anyways timeout after 5-10 secs
+					console.log("Loading : ", isLoading);
 				});
 
 				$scope.$on('PaytmIM.ApplyPromoCode', function(event, promoCodeObj){
@@ -29,7 +34,7 @@
 
 				$scope.$on('PaytmIM.NoMerchantAgent', function(event){
 					//Handle: Show message on UI.
-					alert("No merchant agent is available for chat");
+					console.log("No merchant agent is available for chat");
 				});
 
 				$scope.$on('PaytmIM.ProductAlreadyBargaining', function(event, product){

@@ -76,6 +76,7 @@
                 });
 
                 $scope.loginToChatServer = function(threadId, bargainObj){
+                    $scope.loadingBroadcast(true);
                     ChatServerService.login.query({
                         email : bargainObj.user.login,
                         access_token :bargainObj.user.accessToken,
@@ -125,12 +126,15 @@
                         case Strophe.Status.CONNECTING:
                             break;
                         case Strophe.Status.CONNECTED:
+                            $scope.loadingBroadcast(false);
                             $scope.chatSDK = CoreService.chatSDK(connection);
                             $scope.connectedState(threadId, bargainObj);
                             break;
                         case Strophe.Status.DISCONNECTING:
+                            $scope.loadingBroadcast(false);
                             break;
                         case Strophe.Status.DISCONNECTED:
+                            $scope.loadingBroadcast(false);
                             $scope.clearLocalStorage();
                             //$scope.loginToChatServer();
                             break;
@@ -200,8 +204,6 @@
 								if(value.attributes){
 									color = value.attributes.hasOwnProperty('Color') ? value.attributes.Color : '';
 									size = value.attributes.hasOwnProperty('Size') ? value.attributes.Size : '';
-									console.log('color',color);
-									console.log('size',size);
 								}
 							}
 						})
@@ -330,6 +332,10 @@
                 
                 $scope.applyPromo =function(promoObj,product){
                     $rootScope.$broadcast('PaytmIM.ApplyPromoCode', promoObj,product);
+                };
+
+                $scope.loadingBroadcast =function(isLoading){
+                    $rootScope.$broadcast('PaytmIM.ShowLoading', isLoading);
                 };
 
                 $scope.$on('ChatMessageChanged', function(event){
