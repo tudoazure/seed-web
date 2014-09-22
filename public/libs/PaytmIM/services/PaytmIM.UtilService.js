@@ -133,12 +133,19 @@
 		};
 
 		var getLocalTime = function(ts) {
-			var month = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug','Sep', 'Oct','Nov', 'Dec'];
+			var day = "Today";
+			var month = ['January', 'Febuary', 'March', 'April', 'May', 'June', 'July', 'August','September', 'October','November', 'December'];
 			var d1 = new Date(ts * 1000);
+			var d2 = new Date();
+			var d2_date = d2.getDate();
+
 			var date = d1.getDate();
+			if(date < d2_date){
+				day = "Yesterday";
+			}
 			var month = month[d1.getMonth()];
 			var hrs = d1.getHours();
-			var minute = d1.getMinutes();
+			var minute = (d1.getMinutes() < 10 ? '0' :'') + d1.getMinutes() ;
 			var dd = "AM";
 		    var h = hrs;
 		    if (h >= 12) {
@@ -148,7 +155,7 @@
 		    if (h == 0) {
 		        h = 12;
 		    }
-			var dateString = date +' '+ month + ' '+h + ':' + minute + ' ' +dd; 
+			var dateString = day + ", " + date +' '+ month + ', '+h + ':' + minute + ' ' +dd; 
 			return dateString;
 			// return moment.unix(ts).format("Do MMM  h:mm A");
         };
