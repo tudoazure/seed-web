@@ -48,7 +48,7 @@
 	    			<div ng-if="message.isPromoCode" align="left">
 	    				<ul>
 	    					<li>{{parseJSON(message.txt).PRMCODE.message}} 
-	    					<li> <span class='bold'> Code: </span> <a ng-click='applyPromo(message.txt,product)' class='pointer'>{{parseJSON(message.txt).PRMCODE.promocode}}</a> </li>
+	    					<li> <span class='bold'> Code: </span> <a ng-click='copyPromoCode(message.txt)' class='pointer'>{{parseJSON(message.txt).PRMCODE.promocode}}</a> </li>
 	    					<li> <span class='bold'> Qty: </span> {{parseJSON(message.txt).PRMCODE.minQuantity}} </li>
 	    					<li> <span class='bold'> Validity: </span> {{parseJSON(message.txt).PRMCODE.validity }}</li>
 	    					<li>

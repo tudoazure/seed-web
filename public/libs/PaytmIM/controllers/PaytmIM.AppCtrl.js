@@ -334,6 +334,11 @@
                     $rootScope.$broadcast('PaytmIM.ApplyPromoCode', promoObj,product);
                 };
 
+                $scope.copyPromoCode = function(message) {
+                    var text = JSON.parse(message).PRMCODE.promocode;
+                    window.prompt("Copy to clipboard: Ctrl+C or Cmd+C, Enter", text);
+                };
+
                 $scope.loadingBroadcast =function(isLoading){
                     $rootScope.$broadcast('PaytmIM.ShowLoading', isLoading);
                 };
