@@ -1,7 +1,6 @@
 
 <div class="chat-wrapper" style="height:516px;" ng-show="!isClosed">
 	<div class="chat" ng-show="!collapse" ng-click="setFocus()" ng-class="$storage.threads[thread].isActiveChat ? 'activeChat': ''">
-	    
 	    <div class="chatheader">Baragin with  {{product.PRDCNTXT.name}}
 	    	<i class="fa fa-times pointer" style="float:right;" ng-click="closeChat()"></i>
 	    	<i class="fa fa-minus minus pointer" style="float:right;" ng-click="minimize()"></i>
@@ -29,18 +28,18 @@
 			<div class="upArrow fr pointer"></div>
 		</div>
 
-	    <div class="text clear" chat-scroll-down ng-class="detailView ? 'p60' : ''">
+	    <div class="text-area-class clear" chat-scroll-down ng-class="detailView ? 'p60' : ''">
 	    	<div ng-repeat="message in chatData.messages">
-	    		<div ng-if="!message.isProductDetails && !message.isCloseMessage" class='bubble  reporter bgblue' ng-class="chatData.user == message.sender ? 'bubble--alt user-mesg1' : 'agent-mesg1'">
+	    		<div ng-if="!message.isProductDetails && !message.isCloseMessage" class='bubble-chat  reporter bgblue' ng-class="chatData.user == message.sender ? 'bubble--alt user-mesg1' : 'agent-mesg1'">
 	    			<div class='chat-name' ng-if='!message.isPromoCode'>{{message.txt}}</div>
 	    			<div ng-if="message.isPromoCode" align="left">
 	    				<ul>
 	    					<li>{{parseJSON(message.txt).PRMCODE.message}} 
-	    					<li> <span class='bold'> Code: </span> <a ng-click='applyPromo(message.txt)' class='pointer'>{{parseJSON(message.txt).PRMCODE.promocode}}</a> </li>
+	    					<li> <span class='bold'> Code: </span> <a ng-click='applyPromo(message.txt,product)' class='pointer'>{{parseJSON(message.txt).PRMCODE.promocode}}</a> </li>
 	    					<li> <span class='bold'> Qty: </span> {{parseJSON(message.txt).PRMCODE.minQuantity}} </li>
 	    					<li> <span class='bold'> Validity: </span> {{parseJSON(message.txt).PRMCODE.validity }}</li>
 	    					<li>
-	    						<a ng-click='applyPromo(message.txt)' class='pointer'>Apply</a>
+	    						<a ng-click='applyPromo(message.txt,product)' class='pointer'>Apply</a>
 							</li>
 	    			 </div>
 	    		</div>
