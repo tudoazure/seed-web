@@ -56,7 +56,10 @@
 							</li>
 	    			 </div>
 	    		</div>
-	    		<div align="center" class="clear messageTime" ng-if="message.sender == chatData.user && !message.isCloseMessage && !message.isProductDetails" style='font-size:9px' >{{parseDate(message.sent_on)}}</div>
+	    		<div align="center" class="clear messageTime" ng-if="message.sender == chatData.user && !message.isCloseMessage && !message.isProductDetails" style='font-size:9px' >
+	    		<div>{{getMesgState(message.state)}}</div>
+	    		{{parseDate(message.sent_on)}}
+	    		</div>
 	    		<div align="center" class="clear messageTime italic" ng-if="message.isCloseMessage">
 	    			<div ng-if="message.sender == chatData.user">You closed the conversation</div>
 	    			<div ng-if="message.sender != chatData.user">Agent closed the conversation</div>
