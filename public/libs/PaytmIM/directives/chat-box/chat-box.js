@@ -74,12 +74,36 @@
             };
 
             scope.closeChat = function(){
+              if(scope.chatData.status != 'closed'){
                 var body = {CLSCHAT : "chat closed" };
                 body = UtilService.stringifyEmitUnicode(body, true);
                 scope.userMessage = body;
                 scope.submitMessage(true);
                 scope.chatData.status = 'closed';
+              }
+              else{
                 scope.isClosed = !scope.isClosed;
+                scope.$emit('CloseUserChat', scope.thread);
+              }
+            };
+
+            scope.getMesgState = function(state){
+              var messageState = "Sent";
+              switch(state){
+                case 0:
+                  messageState = "Received"
+                  break;
+                case 1:
+                  messageState = "Sent"
+                  break;
+                case 2:
+                  messageState = "Delievered"
+                  break;
+                case 3:
+                  messageState = "Read"
+                  break;
+              }
+              return messageState;
             };
 
             scope.submitMessage = function(isCloseMessage){

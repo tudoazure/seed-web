@@ -15,27 +15,42 @@
 	    	<div class="dwnArrow fr pointer" ng-click="detailView = !detailView" ng-class="product.PRDCNTXT.description ? '' : 'bottom0'"></div>
 	    </div>
 
-		<div class="productHeader h60" ng-show="detailView" ng-click="detailView = !detailView">
-			<div class="imgDiv fl pointer" ng-click="gotoProduct(product)">
+		<div class="detailHeader" ng-show="detailView" ng-click="detailView = !detailView">
+			<div class="imgDiv fl pointer mt10" ng-click="gotoProduct(product)">
 				<img class="image pointer" ng-src="{{product.PRDCNTXT.image_url}}"/>
 			</div>
 			<div class=" fr pointer detailDiv" align="left" title="{{product.PRDCNTXT.description}}" ng-click="gotoProduct(product)">	
 					<div class="detail"> {{product.PRDCNTXT.description}} </div>
-					<div><span class="strike">Rs {{product.PRDCNTXT.actual_price}} </span> 
-					<span> Rs {{product.PRDCNTXT.price}} </span>  </div>
 			</div>
 			<div class="clear"></div>
 			<div class="upArrow fr pointer"></div>
+			<div class="clear detail2">
+				<div class="fl w50">
+					<span class="bold"> Price: </span>
+					<span class="strike"> Rs {{product.PRDCNTXT.actual_price}} </span> 
+					<span ng-show='product.PRDCNTXT.color' class="bold"> 
+					Color: </span>
+					<span>{{product.PRDCNTXT.color}} </span>
+				</div>
+				<div class="fr w50"> 
+					<span class="bold">Offer Price:</span>
+					<span> Rs {{product.PRDCNTXT.price}} </span> 
+				 	<span ng-show='product.PRDCNTXT.size' class="bold">Size:</span>
+				 	<span>{{product.PRDCNTXT.size}}</span> 
+			 	</div>
+			</div>
 		</div>
 
 	    <div class="text-area-class clear" chat-scroll-down ng-class="detailView ? 'p60' : ''">
 	    	<div ng-repeat="message in chatData.messages">
 	    		<div ng-if="!message.isProductDetails && !message.isCloseMessage" class='bubble-chat  reporter bgblue' ng-class="chatData.user == message.sender ? 'bubble--alt user-mesg1' : 'agent-mesg1'">
-	    			<div class='chat-name' ng-if='!message.isPromoCode'>{{message.txt}}</div>
+	    			<div class='chat-name' ng-if='!message.isPromoCode'>{{message.txt}}
+	    			<span ng-if="chatData.user == message.sender" style="font-size: 8px;">{{getMesgState(message.state)}}</span>
+	    			</div>
 	    			<div ng-if="message.isPromoCode" align="left">
 	    				<ul>
 	    					<li>{{parseJSON(message.txt).PRMCODE.message}} 
-	    					<li> <span class='bold'> Code: </span> <a ng-click='applyPromo(message.txt,product)' class='pointer'>{{parseJSON(message.txt).PRMCODE.promocode}}</a> </li>
+	    					<li> <span class='bold'> Code: </span> <a ng-click='copyPromoCode(message.txt)' class='pointer'>{{parseJSON(message.txt).PRMCODE.promocode}}</a> </li>
 	    					<li> <span class='bold'> Qty: </span> {{parseJSON(message.txt).PRMCODE.minQuantity}} </li>
 	    					<li> <span class='bold'> Validity: </span> {{parseJSON(message.txt).PRMCODE.validity }}</li>
 	    					<li>
@@ -43,7 +58,10 @@
 							</li>
 	    			 </div>
 	    		</div>
-	    		<div align="center" class="clear messageTime" ng-if="message.sender == chatData.user && !message.isCloseMessage && !message.isProductDetails" style='font-size:9px' >{{parseDate(message.sent_on)}}</div>
+	    		<div align="center" class="clear messageTime" ng-if="message.sender == chatData.user && !message.isCloseMessage && !message.isProductDetails" style='font-size:9px' >
+	    		<!-- <div>{{getMesgState(message.state)}}</div> -->
+	    		{{parseDate(message.sent_on)}}
+	    		</div>
 	    		<div align="center" class="clear messageTime italic" ng-if="message.isCloseMessage">
 	    			<div ng-if="message.sender == chatData.user">You closed the conversation</div>
 	    			<div ng-if="message.sender != chatData.user">Agent closed the conversation</div>

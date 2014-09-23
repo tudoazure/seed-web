@@ -76,6 +76,7 @@
                 });
 
                 $scope.loginToChatServer = function(threadId, bargainObj){
+                    $scope.loadingBroadcast(true);
                     ChatServerService.login.query({
                         email : bargainObj.user.login,
                         access_token :bargainObj.user.accessToken,
@@ -125,12 +126,15 @@
                         case Strophe.Status.CONNECTING:
                             break;
                         case Strophe.Status.CONNECTED:
+                            $scope.loadingBroadcast(false);
                             $scope.chatSDK = CoreService.chatSDK(connection);
                             $scope.connectedState(threadId, bargainObj);
                             break;
                         case Strophe.Status.DISCONNECTING:
+                            $scope.loadingBroadcast(false);
                             break;
                         case Strophe.Status.DISCONNECTED:
+                            $scope.loadingBroadcast(false);
                             $scope.clearLocalStorage();
                             //$scope.loginToChatServer();
                             break;
@@ -171,7 +175,7 @@
                     $scope.chatSDK.connection.addHandler($scope.chatSDK.on_message, null, "message", "chat");
                 };
 
-                $scope.getMerchantAgent = function(threadId, bargainObj){
+				$scope.getMerchantAgent = function(threadId, bargainObj){
                     ChatServerService.getAgent.query({
                         session_id : $scope.chatServer.sessionId,
                         merchant_id : 1
@@ -185,38 +189,49 @@
                         else{
                             $rootScope.$broadcast('PaytmIM.NoMerchantAgent');
                         }
-
                     }, function failure(error){
                         $rootScope.$broadcast('PaytmIM.NoMerchantAgent');
                     })
                 };
-
-                $scope.parseProduct = function(bargainObj){
-                    var productObj = bargainObj.product;
-                    var user = bargainObj.user;
-                    var product = {
-                        description: productObj.bargain_name,
-                        email: user.login,
-                        first_name : '',
-                        id : productObj.product_id ? productObj.product_id.toString(): '' ,
-                        image_url : productObj.image_url ,
-                        last_name : '',
-                        merchant_id: productObj.merchant.merchant_id ?  productObj.merchant.merchant_id.toString() : '' ,
-                        name : productObj.merchant.merchant_name,
-                        price : productObj.offer_price ? productObj.offer_price.toString() : '',
-                        actual_price : productObj.actual_price ? productObj.actual_price.toString() : '',
-                        product_url : productObj.url,
-                        user_id: user.user_id ? user.user_id.toString() : '',
-                        seourl:productObj.seourl
-                    };
-
-                    var productMsg = {
+				
+				$scope.parseProduct = function(bargainObj){
+					var productObj = bargainObj.product;
+					var user = bargainObj.user;
+					var color = '', size = '';
+					if(productObj.long_rich_desc && productObj.long_rich_desc.length){
+						angular.forEach(productObj.long_rich_desc, function(value, index){
+							if(value.title && value.title.toLowerCase() == 'description' ){
+								if(value.attributes){
+									color = value.attributes.hasOwnProperty('Color') ? value.attributes.Color : '';
+									size = value.attributes.hasOwnProperty('Size') ? value.attributes.Size : '';
+								}
+							}
+						})
+					}
+					var product = {
+						description: productObj.bargain_name,
+						email: user.login,
+						first_name : '',
+						id : productObj.product_id ? productObj.product_id.toString(): '' ,
+						image_url : productObj.image_url ,
+						last_name : '',
+						merchant_id: productObj.merchant.merchant_id ?  productObj.merchant.merchant_id.toString() : '' ,
+						name : productObj.merchant.merchant_name,
+						price : productObj.offer_price ? productObj.offer_price.toString() : '',
+						actual_price : productObj.actual_price ? productObj.actual_price.toString() : '',
+						product_url : productObj.url,
+						user_id: user.user_id ? user.user_id.toString() : '',
+						size : size,
+						color: color
+					};
+					var productMsg = {
                         PRDCNTXT : product
                     };
                     return productMsg;
 
                 };
 
+                
                 $scope.initiateBargain = function(bargainObj){
                     var productId = bargainObj.product.product_id;
                     $scope.initialize();
@@ -294,22 +309,39 @@
                 };
 
                 $scope.$on('CloseUserChat', function(event, threadId){
-                    $scope.presentBargain = $scope.presentBargain - 1;
-                    console.log("ActiveBargains", $scope.presentBargain);
-                    if($scope.presentBargain){
-                        delete $scope.threads[threadId];
-                        delete $scope.$storage.threads[threadId];
-                        $scope.$apply(function (){
-                            $scope.$storage = $localStorage;
-                        });
-                    }
-                    else{
-                        $scope.disconnectXMPPConnection();
-                        // delete $scope.threads[threadId];
-                        // delete $scope.$storage.threads[threadId];
-                        // $scope.clearLocalStorage();
+                    if($scope.$storage.threads[threadId] && $scope.$storage.threads[threadId].status != "closed"){
+                        $scope.presentBargain = $scope.presentBargain - 1;
+                        console.log("ActiveBargains", $scope.presentBargain);
+                        if($scope.presentBargain){
+                            delete $scope.threads[threadId];
+                            delete $scope.$storage.threads[threadId];
+                            $scope.$apply(function (){
+                                $scope.$storage = $localStorage;
+                            });
+                        }
+                        else{
+                            $scope.disconnectXMPPConnection();
+                            // delete $scope.threads[threadId];
+                            // delete $scope.$storage.threads[threadId];
+                            // $scope.clearLocalStorage();
+                        }
                     }
                 });
+
+                $scope.$on('AgentCloseChat', function(event, threadId){
+                    if($scope.$storage.threads[threadId]){
+                        $scope.presentBargain = $scope.presentBargain - 1;
+                        $scope.$storage.threads[threadId].status = "closed";
+                        $scope.threads[threadId] = $scope.$storage.threads[threadId];
+                        $scope.$apply(function (){
+                            //$scope.$storage = $localStorage;
+                        });
+                        // if(!$scope.presentBargain){
+                        //     $scope.disconnectXMPPConnection();
+                        // }
+                        console.log("ActiveBargains", $scope.presentBargain);
+                    }
+                })
 
                 $scope.gotoProduct = function(product){
                     $rootScope.$broadcast('PaytmIM.NavigateToProduct', product);
@@ -317,6 +349,15 @@
                 
                 $scope.applyPromo =function(promoObj,product){
                     $rootScope.$broadcast('PaytmIM.ApplyPromoCode', promoObj,product);
+                };
+
+                $scope.copyPromoCode = function(message) {
+                    var text = JSON.parse(message).PRMCODE.promocode;
+                    window.prompt("Copy to clipboard: Ctrl+C or Cmd+C, Enter", text);
+                };
+
+                $scope.loadingBroadcast =function(isLoading){
+                    $rootScope.$broadcast('PaytmIM.ShowLoading', isLoading);
                 };
 
                 $scope.$on('ChatMessageChanged', function(event){
