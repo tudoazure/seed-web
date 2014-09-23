@@ -326,6 +326,21 @@
                     }
                 });
 
+                $scope.$on('AgentCloseChat', function(event, threadId){
+                    if($scope.$storage.threads[threadId]){
+                        $scope.presentBargain = $scope.presentBargain - 1;
+                        $scope.$storage.threads[threadId].status = "closed";
+                        $scope.threads[threadId] = $scope.$storage.threads[threadId];
+                        $scope.$apply(function (){
+                            //$scope.$storage = $localStorage;
+                        });
+                        // if(!$scope.presentBargain){
+                        //     $scope.disconnectXMPPConnection();
+                        // }
+                        console.log("ActiveBargains", $scope.presentBargain);
+                    }
+                })
+
                 $scope.gotoProduct = function(product){
                     $rootScope.$broadcast('PaytmIM.NavigateToProduct', product);
                 };

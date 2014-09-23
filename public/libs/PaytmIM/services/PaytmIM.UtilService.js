@@ -269,6 +269,7 @@
 	        	}
 	        	if(specialMsg.CLSCHAT){
 	        		messageobj['isCloseMessage'] = true;
+	        		$rootScope.$broadcast("AgentCloseChat", threadId);
 	        	}
 
 	        }
