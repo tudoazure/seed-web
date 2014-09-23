@@ -107,12 +107,12 @@
 	/*float: right;*/
   float: left;
 	margin-bottom: 12px;
-	padding: 5px 10px;
+	padding: 2px 9px;
 	position: relative;
 	width: auto;
 	max-width: 85%;
 	word-wrap: break-word;
-	line-height: 1.38em;
+	line-height: 1.08em;
   margin-left: 2%;
   background-color: #E7E6EB;
 }
