@@ -44,7 +44,9 @@
 	    <div class="text-area-class clear" chat-scroll-down ng-class="detailView ? 'p60' : ''">
 	    	<div ng-repeat="message in chatData.messages">
 	    		<div ng-if="!message.isProductDetails && !message.isCloseMessage" class='bubble-chat  reporter bgblue' ng-class="chatData.user == message.sender ? 'bubble--alt user-mesg1' : 'agent-mesg1'">
-	    			<div class='chat-name' ng-if='!message.isPromoCode'>{{message.txt}}</div>
+	    			<div class='chat-name' ng-if='!message.isPromoCode'>{{message.txt}}
+	    			<span ng-if="chatData.user == message.sender" style="font-size: 8px;">{{getMesgState(message.state)}}</span>
+	    			</div>
 	    			<div ng-if="message.isPromoCode" align="left">
 	    				<ul>
 	    					<li>{{parseJSON(message.txt).PRMCODE.message}} 
@@ -57,7 +59,7 @@
 	    			 </div>
 	    		</div>
 	    		<div align="center" class="clear messageTime" ng-if="message.sender == chatData.user && !message.isCloseMessage && !message.isProductDetails" style='font-size:9px' >
-	    		<div>{{getMesgState(message.state)}}</div>
+	    		<!-- <div>{{getMesgState(message.state)}}</div> -->
 	    		{{parseDate(message.sent_on)}}
 	    		</div>
 	    		<div align="center" class="clear messageTime italic" ng-if="message.isCloseMessage">
