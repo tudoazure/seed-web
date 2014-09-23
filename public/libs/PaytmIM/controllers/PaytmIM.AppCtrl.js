@@ -326,6 +326,13 @@
                             // $scope.clearLocalStorage();
                         }
                     }
+                    else if($scope.$storage.threads[threadId]){
+                        delete $scope.threads[threadId];
+                        delete $scope.$storage.threads[threadId];
+                        // $scope.$apply(function (){
+                        //     $scope.$storage = $localStorage;
+                        // });
+                    }
                 });
 
                 $scope.$on('AgentCloseChat', function(event, threadId){

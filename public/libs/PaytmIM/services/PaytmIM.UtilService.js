@@ -296,7 +296,7 @@
 	        	localStorage["ngStorage-threads"] = JSON.stringify($localStorage.threads);
 	        }
 	        else{
-	        	alert("Thread not found");
+	        	console.log("Thread not found");
 	        }
 	    };
 
