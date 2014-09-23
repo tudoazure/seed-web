@@ -309,20 +309,22 @@
                 };
 
                 $scope.$on('CloseUserChat', function(event, threadId){
-                    $scope.presentBargain = $scope.presentBargain - 1;
-                    console.log("ActiveBargains", $scope.presentBargain);
-                    if($scope.presentBargain){
-                        delete $scope.threads[threadId];
-                        delete $scope.$storage.threads[threadId];
-                        $scope.$apply(function (){
-                            $scope.$storage = $localStorage;
-                        });
-                    }
-                    else{
-                        $scope.disconnectXMPPConnection();
-                        // delete $scope.threads[threadId];
-                        // delete $scope.$storage.threads[threadId];
-                        // $scope.clearLocalStorage();
+                    if($scope.$storage.threads[threadId] && $scope.$storage.threads[threadId].status != "closed"){
+                        $scope.presentBargain = $scope.presentBargain - 1;
+                        console.log("ActiveBargains", $scope.presentBargain);
+                        if($scope.presentBargain){
+                            delete $scope.threads[threadId];
+                            delete $scope.$storage.threads[threadId];
+                            $scope.$apply(function (){
+                                $scope.$storage = $localStorage;
+                            });
+                        }
+                        else{
+                            $scope.disconnectXMPPConnection();
+                            // delete $scope.threads[threadId];
+                            // delete $scope.$storage.threads[threadId];
+                            // $scope.clearLocalStorage();
+                        }
                     }
                 });
 
