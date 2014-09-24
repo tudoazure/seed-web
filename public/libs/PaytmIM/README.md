@@ -24,3 +24,5 @@ Users:
 	accessToken : "3de7a0ff-13e1-4421-b3a2-043f708a5e9e"
 3) login : "paytmuser2@mailinator.com",
 	accessToken : "2f801d52-660e-4e13-8eb2-2c5421966807"
+4) login : "paytmuser7@mailinator.com"
+	accessToken : "d7fa7907-e6c9-4b0c-a830-6fe2f86efa5d"

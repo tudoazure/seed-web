@@ -45,9 +45,9 @@
 	    	<div ng-repeat="message in chatData.messages">
 	    		<div ng-if="!message.isProductDetails && !message.isCloseMessage" class='bubble-chat  reporter bgblue' ng-class="chatData.user == message.sender ? 'bubble--alt user-mesg1' : 'agent-mesg1'">
 	    			<div class='chat-name' ng-if='!message.isPromoCode'>{{message.txt}}</div>
-	    			<div align="right" style="font-size: 8px;">
-	    			<span ng-if="chatData.user == message.sender">{{getMesgState(message.state)}}</span>
-	    			<i class="fa  fa-check"></i>
+	    			<div ng-if="chatData.user == message.sender" align="right" style="font-size: 8px;">
+	    			<span >{{getMesgState(message.state)}}</span>
+	    			<i ng-if = "getMesgState(message.state) == 'Delievered' || getMesgState(message.state) == 'Read'" class="fa  fa-check"></i>
 	    			</div>
 	    			
 	    			<div ng-if="message.isPromoCode" align="left">
