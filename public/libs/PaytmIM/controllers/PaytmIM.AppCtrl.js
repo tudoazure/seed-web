@@ -175,7 +175,7 @@
                     $scope.chatSDK.connection.addHandler($scope.chatSDK.on_message, null, "message", "chat");
                 };
 
-				$scope.getMerchantAgent = function(threadId, bargainObj){
+                $scope.getMerchantAgent = function(threadId, bargainObj){
                     ChatServerService.getAgent.query({
                         session_id : $scope.chatServer.sessionId,
                         merchant_id : 1
@@ -193,38 +193,38 @@
                         $rootScope.$broadcast('PaytmIM.NoMerchantAgent');
                     })
                 };
-				
-				$scope.parseProduct = function(bargainObj){
-					var productObj = bargainObj.product;
-					var user = bargainObj.user;
-					var color = '', size = '';
-					if(productObj.long_rich_desc && productObj.long_rich_desc.length){
-						angular.forEach(productObj.long_rich_desc, function(value, index){
-							if(value.title && value.title.toLowerCase() == 'description' ){
-								if(value.attributes){
-									color = value.attributes.hasOwnProperty('Color') ? value.attributes.Color : '';
-									size = value.attributes.hasOwnProperty('Size') ? value.attributes.Size : '';
-								}
-							}
-						})
-					}
-					var product = {
-						description: productObj.bargain_name,
-						email: user.login,
-						first_name : '',
-						id : productObj.product_id ? productObj.product_id.toString(): '' ,
-						image_url : productObj.image_url ,
-						last_name : '',
-						merchant_id: productObj.merchant.merchant_id ?  productObj.merchant.merchant_id.toString() : '' ,
-						name : productObj.merchant.merchant_name,
-						price : productObj.offer_price ? productObj.offer_price.toString() : '',
-						actual_price : productObj.actual_price ? productObj.actual_price.toString() : '',
-						product_url : productObj.url,
-						user_id: user.user_id ? user.user_id.toString() : '',
-						size : size,
-						color: color
-					};
-					var productMsg = {
+                
+                $scope.parseProduct = function(bargainObj){
+                    var productObj = bargainObj.product;
+                    var user = bargainObj.user;
+                    var color = '', size = '';
+                    if(productObj.long_rich_desc && productObj.long_rich_desc.length){
+                        angular.forEach(productObj.long_rich_desc, function(value, index){
+                            if(value.title && value.title.toLowerCase() == 'description' ){
+                                if(value.attributes){
+                                    color = value.attributes.hasOwnProperty('Color') ? value.attributes.Color : '';
+                                    size = value.attributes.hasOwnProperty('Size') ? value.attributes.Size : '';
+                                }
+                            }
+                        })
+                    }
+                    var product = {
+                        description: productObj.bargain_name,
+                        email: user.login,
+                        first_name : '',
+                        id : productObj.product_id ? productObj.product_id.toString(): '' ,
+                        image_url : productObj.image_url ,
+                        last_name : '',
+                        merchant_id: productObj.merchant.merchant_id ?  productObj.merchant.merchant_id.toString() : '' ,
+                        name : productObj.merchant.merchant_name,
+                        price : productObj.offer_price ? productObj.offer_price.toString() : '',
+                        actual_price : productObj.actual_price ? productObj.actual_price.toString() : '',
+                        product_url : productObj.url,
+                        user_id: user.user_id ? user.user_id.toString() : '',
+                        size : size,
+                        color: color
+                    };
+                    var productMsg = {
                         PRDCNTXT : product
                     };
                     return productMsg;
