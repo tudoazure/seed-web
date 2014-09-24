@@ -13,9 +13,9 @@
                             $scope.presentBargain++;
                         });
                     }
-                    if(!$scope.presentBargain){
-                        $scope.clearLocalStorage();
-                    }
+                    // if(!$scope.presentBargain){
+                    //     $scope.clearLocalStorage();
+                    // }
                 };
 
                 $scope.init = function(){
@@ -332,6 +332,9 @@
                         // $scope.$apply(function (){
                         //     $scope.$storage = $localStorage;
                         // });
+                        if(!$scope.presentBargain){
+                            $scope.disconnectXMPPConnection();
+                        }
                     }
                 });
 
