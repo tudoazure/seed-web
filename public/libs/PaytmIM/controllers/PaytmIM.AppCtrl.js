@@ -75,7 +75,7 @@
                     });
                 });
 
-                $scope.loginToChatServer = function(threadId, bargainObj){
+                $scope.loginToChatServer = function(bargainObj){
                     $scope.loadingBroadcast(true);
                     ChatServerService.login.query({
                         email : bargainObj.user.login,
@@ -92,7 +92,7 @@
                             $scope.chatServer.plustxtId = response.data['tego_id'] + "@" + Globals.AppConfig.ChatHostURI;
                             $scope.chatServer.password = response.data['password'] + response.data['tego_id'].substring(0, 3);
                             $scope.chatServer.connected = false;
-                            $scope.stropheConnection($scope.chatServer.plustxtId, $scope.chatServer.password, threadId, bargainObj);
+                            $scope.stropheConnection($scope.chatServer.plustxtId, $scope.chatServer.password, bargainObj);
                         }
                         else{
                         }
@@ -101,13 +101,13 @@
                     })
                 };
 
-                $scope.stropheConnection = function(login, password, threadId, bargainObj){
+                $scope.stropheConnection = function(login, password, bargainObj){
                     $scope.chatServer.tid = UtilService.guid();
                     localStorage.tid = $scope.chatServer.tid;
                     $scope.$storage.chatServer = $scope.chatServer;
                     var connection = new Strophe.Connection(Globals.AppConfig.StropheConnect);
                     connection.connect(login, password, $scope.chatServer.tid, function (status) {
-                        $scope.conectionStateChange(connection, status, threadId, bargainObj);
+                        $scope.conectionStateChange(connection, status, bargainObj);
                     })
                 };
 
@@ -119,7 +119,7 @@
                     })
                 };
 
-                $scope.conectionStateChange = function(connection, status, threadId, bargainObj){
+                $scope.conectionStateChange = function(connection, status, bargainObj){
                     console.log("StropheStatus : ", status);
                     $scope.connection = connection;
                     switch(status){
@@ -128,7 +128,7 @@
                         case Strophe.Status.CONNECTED:
                             $scope.loadingBroadcast(false);
                             $scope.chatSDK = CoreService.chatSDK(connection);
-                            $scope.connectedState(threadId, bargainObj);
+                            $scope.connectedState(bargainObj);
                             break;
                         case Strophe.Status.DISCONNECTING:
                             $scope.loadingBroadcast(false);
@@ -160,13 +160,15 @@
                     $scope.connection.disconnect();
                 };
 
-                $scope.connectedState = function(threadId, bargainObj){
+                $scope.connectedState = function(bargainObj){
                     $scope.chatServer.connected = true;
                     $scope.chatServer['sid'] = $scope.connection._proto.sid;
                     $scope.chatServer['jid'] = $scope.connection.jid;
-                    if(threadId){
-                        $scope.getMerchantAgent(threadId, bargainObj);
+
+                    if(bargainObj){
+                        $scope.getMerchantAgent(bargainObj);
                     }
+
                     $scope.$storage.chatServer = $scope.chatServer;
                     $scope.chatSDK.connection.addHandler($scope.chatSDK.ping_handler, null, "iq", null, "ping1");
                     $scope.chatSDK.connection.addHandler($scope.chatSDK.ping_handler_readACK, null, "iq", null, "readACK");
@@ -175,7 +177,7 @@
                     $scope.chatSDK.connection.addHandler($scope.chatSDK.on_message, null, "message", "chat");
                 };
 
-                $scope.getMerchantAgent = function(threadId, bargainObj){
+                $scope.getMerchantAgent = function(bargainObj){
                     ChatServerService.getAgent.query({
                         session_id : $scope.chatServer.sessionId,
                         merchant_id : 1
@@ -183,7 +185,7 @@
                         if(response && !response.status && response.data){
                             var agentId = Globals.AppConfig.AgentId;//response.data.agent;
                             var msg = UtilService.stringifyEmitUnicode($scope.parseProduct(bargainObj))//Globals.AppConfig.ProductMessage[productId];
-                            $scope.sendInitialMessage(threadId, bargainObj.product.product_id, agentId, msg);
+                            $scope.sendInitialMessage(bargainObj.product.product_id, agentId, msg);
                             $scope.presentBargain++;
                         }
                         else{
@@ -233,32 +235,34 @@
 
                 
                 $scope.initiateBargain = function(bargainObj){
-                    var productId = bargainObj.product.product_id;
-                    $scope.initialize();
-                    if($scope.presentBargain < Globals.AppConfig.MaxThreads){
-                        var productPresent = false;
-                        angular.forEach($scope.threads, function(value, index){
-                            if(value.productId == productId){
-                                productPresent = true;
+                    if(bargainObj && bargainObj.product && bargainObj.product.product_id){
+                        var productId = bargainObj.product.product_id;
+                        $scope.initialize();
+                        if($scope.presentBargain < Globals.AppConfig.MaxThreads){
+                            var productPresent = false;
+                            angular.forEach($scope.threads, function(value, index){
+                                if(value.productId == productId){
+                                    productPresent = true;
+                                }
+                            })
+                            if(productPresent){
+                                $rootScope.$broadcast('PaytmIM.ProductAlreadyBargaining', bargainObj.product);
                             }
-                        })
-                        if(productPresent){
-                            $rootScope.$broadcast('PaytmIM.ProductAlreadyBargaining', bargainObj.product);
-                        }
-                        else{
-                            var threadId = productId + "-" + UtilService.guid();
-                            if(!$scope.threads[threadId]){
+                            else{
                                 if($scope.chatServer && $scope.chatServer.connected){
-                                    $scope.getMerchantAgent(threadId, bargainObj);
+                                    $scope.getMerchantAgent(bargainObj);
                                 }
                                 else{
-                                    $scope.loginToChatServer(threadId, bargainObj);
+                                    $scope.loginToChatServer(bargainObj);
                                 }
                             }
+                        }
+                        else{
+                            $rootScope.$broadcast('PaytmIM.MaxBargainLimitReached', Globals.AppConfig.MaxThreads);
                         }
                     }
                     else{
-                        $rootScope.$broadcast('PaytmIM.MaxBargainLimitReached', Globals.AppConfig.MaxThreads);
+                        console.log("PRODUCT NOT PASSED");
                     }
                 };
 
@@ -266,12 +270,13 @@
                     $scope.initiateBargain(bargainObj);
                 })
 
-                $scope.sendInitialMessage = function(threadId, productId, agentId, msgText){
+                $scope.sendInitialMessage = function(productId, agentId, msgText){
+                    var threadId = $scope.chatServer.tegoId + "-" +  productId;
+
                     var timeInMilliSecond = UtilService.getTimeInLongString();
                     var strTimeMii = timeInMilliSecond.toString();
                     var messageId = $scope.chatServer.tegoId  + "-c-" + strTimeMii;
                     var mid = messageId.toString();
-
                     var message = {
                         id: "",
                         last_ts: strTimeMii.substring(0, 10),
