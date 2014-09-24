@@ -12,6 +12,6 @@ var Globals = {
     StropheConnect : chatHostBaseURI  + "/http-bind/",
 
     // Following should be replaced in the implementation
-    AgentId : "piayrq"
+    AgentId : "2kxq45"
  }      
 })();
