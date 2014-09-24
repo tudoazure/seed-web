@@ -291,7 +291,11 @@
                     thread.messages = [message];
                     thread.productId = productId;
                     thread.agent = agentId;
+                    thread.order = Object.keys($scope.threads).length;
+                    //console.log(Object.keys($scope.threads).length);
                     $scope.threads[threadId] = thread;
+                    //console.log('length1',Object.keys($scope.threads).length);
+                    console.log(thread);
                     $scope.$storage.threads = $scope.threads;
                     var jId = $scope.threads[threadId].agent + "@" + Globals.AppConfig.ChatHostURI;
                     $scope.sendMessage(message, jId, timeInMilliSecond, mid, threadId);
@@ -378,5 +382,18 @@
 
                 $scope.init();
             }
-        ]);
+        ]).filter('orderObjectBy', function() {
+  return function(items, field, reverse) {
+    var filtered = [];
+    angular.forEach(items, function(item) {
+      filtered.push(item);
+    });
+    filtered.sort(function (a, b) {
+      return (a[field] > b[field] ? 1 : -1);
+    });
+    if(reverse) filtered.reverse();
+    return filtered;
+  };
+});
+;
 })(angular);
