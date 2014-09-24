@@ -8,6 +8,7 @@
         templateUrl: 'libs/PaytmIM/directives/chat-box/chat-box-template.html',
         scope: false,
         link: function(scope, element, attrs) {
+            scope.thread = scope.chatData.threadId;
             scope.getProduct = function(){
               if(scope.chatData.messages[0]){
                 try{

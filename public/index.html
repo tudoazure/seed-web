@@ -76,7 +76,7 @@
     <!-- THIS IS WHAT YOU NEED TO ADD ON YOUR INDEX.HTML/JADE/WEB MAIN VIEW -->
     <div ng-controller="PaytmIM.AppCtrl">
         <div ng-if="$storage && $storage.threads" class="chat-container" >
-            <div ng-repeat="(thread, chatData) in $storage.threads | orderObjectBy:'order':false">
+            <div ng-repeat="chatData in $storage.threads | orderObjectBy:'order':false">
                 <chat-box></chat-box>
             </div>
         </div>
