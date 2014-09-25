@@ -131,11 +131,11 @@
                             $scope.connectedState(bargainObj);
                             break;
                         case Strophe.Status.DISCONNECTING:
-                            $scope.loadingBroadcast(false);
+                            $scope.loadingBroadcast(true);
                             break;
                         case Strophe.Status.DISCONNECTED:
-                            $scope.loadingBroadcast(false);
                             $scope.clearLocalStorage();
+                            $scope.loadingBroadcast(false);
                             //$scope.loginToChatServer();
                             break;
                         case Strophe.Status.AUTHENTICATING:
@@ -143,9 +143,11 @@
                         case Strophe.Status.ERROR:
                             break;
                         case Strophe.Status.CONNFAIL:
+                            $scope.connectionFailed();
                             //$scope.clearLocalStorage();
                             break;
                         case Strophe.Status.AUTHFAIL:
+                            $scope.authorizationFailed();
                             break;
                         case Strophe.Status.ATTACHED:
                             $scope.chatSDK = CoreService.chatSDK(connection);
@@ -153,6 +155,16 @@
                             break;
                     }
                 };
+
+                $scope.connectionFailed = function(){
+                    console.log("It seems you are logged in from somewhere else. Going to disconnect from here.")
+                    $rootScope.$broadcast('PaytmIM.MultipleSessionCreated');
+                }
+
+                $scope.authorizationFailed = function(){
+                    console.log("You don't have access to bargain.")
+                    $rootScope.$broadcast('PaytmIM.AuthorizationFailed');
+                }
 
                 $scope.disconnectXMPPConnection = function() {
                     $scope.connection.options.sync = true; // Switch to using synchronous requests.
@@ -187,6 +199,8 @@
                             var msg = UtilService.stringifyEmitUnicode($scope.parseProduct(bargainObj))//Globals.AppConfig.ProductMessage[productId];
                             $scope.sendInitialMessage(bargainObj.product.product_id, agentId, msg);
                             $scope.presentBargain++;
+                            console.log("Bargain started for Product : ", bargainObj.product.product_id);
+                            $rootScope.$broadcast('PaytmIM.BargainStarted', bargainObj.product.product_id);
                         }
                         else{
                             $rootScope.$broadcast('PaytmIM.NoMerchantAgent');
@@ -318,6 +332,8 @@
 
                 $scope.$on('CloseUserChat', function(event, threadId){
                     if($scope.$storage.threads[threadId] && $scope.$storage.threads[threadId].status != "closed"){
+                        console.log("Bargain Ended for Product : ", $scope.getProductIdFromThread(threadId));
+                        $rootScope.$broadcast('PaytmIM.BargainEnded', $scope.getProductIdFromThread(threadId));
                         $scope.presentBargain = $scope.presentBargain - 1;
                         console.log("ActiveBargains", $scope.presentBargain);
                         if($scope.presentBargain){
@@ -348,6 +364,8 @@
 
                 $scope.$on('AgentCloseChat', function(event, threadId){
                     if($scope.$storage.threads[threadId]){
+                        console.log("Bargain Ended for Product : ", $scope.getProductIdFromThread(threadId));
+                        $rootScope.$broadcast('PaytmIM.BargainEnded', $scope.getProductIdFromThread(threadId));
                         $scope.presentBargain = $scope.presentBargain - 1;
                         $scope.$storage.threads[threadId].status = "closed";
                         $scope.threads[threadId] = $scope.$storage.threads[threadId];
@@ -360,6 +378,10 @@
                         console.log("ActiveBargains", $scope.presentBargain);
                     }
                 })
+
+                $scope.getProductIdFromThread = function(threadId){
+                    return threadId.split('-')[1];
+                }
 
                 $scope.gotoProduct = function(product){
                     $rootScope.$broadcast('PaytmIM.NavigateToProduct', product);
