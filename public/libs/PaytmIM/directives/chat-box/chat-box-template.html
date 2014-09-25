@@ -52,13 +52,21 @@
 	    			
 	    			<div ng-if="message.isPromoCode" align="left">
 	    				<ul>
-	    					<li>{{parseJSON(message.txt).PRMCODE.message}} 
-	    					<li> <span class='bold'> Code: </span> <a ng-click='copyPromoCode(message.txt)' class='pointer'>{{parseJSON(message.txt).PRMCODE.promocode}}</a> </li>
-	    					<li> <span class='bold'> Qty: </span> {{parseJSON(message.txt).PRMCODE.minQuantity}} </li>
-	    					<li> <span class='bold'> Validity: </span> {{parseJSON(message.txt).PRMCODE.validity }}</li>
+	    					<li>{{parseJSON(message.txt).PRMCODE.message}}
+	    					</li>
+	    					<li> 
+	    						<span class='bold'> Code: </span> <a ng-click='copyPromoCode(message.txt)' class='pointer'>{{parseJSON(message.txt).PRMCODE.promocode}}</a> 
+	    					</li>
+	    					<li> 
+	    						<span class='bold'> Qty: </span> {{parseJSON(message.txt).PRMCODE.minQuantity}} 
+	    					</li>
+	    					<li> 
+	    						<span class='bold'> Validity: </span> {{parseJSON(message.txt).PRMCODE.validity }}
+	    					</li>
 	    					<li>
-	    						<a ng-click='applyPromo(message.txt,product)' class='pointer'>Apply</a>
+	    						<input type="button" ng-click="applyPromo(message.txt,product)" value="Apply" class="btn btn-secondary F14 pinCodeVerify ng-click-active">
 							</li>
+						</ul>
 	    			 </div>
 	    		</div>
 	    		<div align="center" class="clear messageTime" ng-if="message.sender == chatData.user && !message.isCloseMessage && !message.isProductDetails" style='font-size:9px' >
