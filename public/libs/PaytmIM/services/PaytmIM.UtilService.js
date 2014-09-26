@@ -238,8 +238,8 @@
 	        localStorage["ngStorage-threads"] = JSON.stringify($localStorage.threads);
 	    };
 
-	    var updateMessageStatusAsRead = function(inotherpartytigoid, intime){
-			var messageArray = $rootScope.plustxtcacheobj['message'][inotherpartytigoid];
+	    var updateMessageStatusAsRead = function(inotherpartytigoid, intime, threadId){
+			var messageArray = $localStorage.threads[threadId]['messages'];
 			var midread = [];
 			for (var key in messageArray)
 			{
@@ -250,7 +250,7 @@
 			    }
 			}
 			if(messageArray){
-				$rootScope.plustxtcacheobj['message'][inotherpartytigoid] = messageArray;
+				localStorage["ngStorage-threads"] = JSON.stringify($localStorage.threads);
 			}
 			return midread;
 		};

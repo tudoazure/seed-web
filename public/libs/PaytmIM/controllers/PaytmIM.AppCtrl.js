@@ -326,7 +326,7 @@
                         $scope.chatSDK.connection.send(ping);
                         var jid_id = $scope.chatSDK.jid_to_id(jid);
                         var tigo_id = Strophe.getNodeFromJid(jid);
-                        $scope.chatSDK.send_Read_Notification(jid, jid_id, tigo_id);
+                        $scope.chatSDK.send_Read_Notification(jid, jid_id, tigo_id, threadId);
                     }
                 };
 

@@ -12,7 +12,7 @@ var Globals = {
     StropheConnect : chatHostBaseURI  + "/http-bind/",
 
     // Following should be replaced in the implementation
-    AgentId : "2kxq45",
+    AgentId : "piayrq",
     UserLogin : "webbargain@paytm.com",
     UserToken : "aceb388d-87f2-4781-9f3b-b36c8d1d4e79"
  }      

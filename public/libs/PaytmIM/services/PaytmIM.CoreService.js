@@ -177,7 +177,7 @@ angular.module('PaytmIM').factory('PaytmIM.CoreService', [ '$rootScope', 'PaytmI
                 return true;
             },
 
-            send_Read_Notification : function(jid, jid_id, tigo_id){
+            send_Read_Notification : function(jid, jid_id, tigo_id, threadId){
                 var to = Strophe.getDomainFromJid(connection.jid);
                 var ping = $iq({to:to,type: "get",id: "readACK"}).c("ping", {xmlns: "urn:xmpp:ping"});
                 connection.send(ping);
@@ -186,6 +186,7 @@ angular.module('PaytmIM').factory('PaytmIM.CoreService', [ '$rootScope', 'PaytmI
                 informationObj['timeStamp']= UtilService.getTimeInLongString();
                 informationObj['jid']=jid;
                 informationObj['jid_id']=jid_id;
+                informationObj['threadId']=threadId;
                 readACKO.push(informationObj);
             },
 
@@ -196,11 +197,12 @@ angular.module('PaytmIM').factory('PaytmIM.CoreService', [ '$rootScope', 'PaytmI
                     var timeStamp = infoObjec['timeStamp'];
                     var jid = infoObjec['jid'];
                     var jid_id = infoObjec['jid_id'];
+                    var threadId = infoObjec['threadId'];
                     var timeInMilliSecond;
                     var strTimeMii;
                     var messageId;
                     var mid;
-                    var midreadArray = UtilService.updateMessageStatusAsRead(tigo_id, timeStamp);
+                    var midreadArray = UtilService.updateMessageStatusAsRead(tigo_id, timeStamp, threadId);
                     for (var i = 0; i < midreadArray.length; i++) {
                       timeInMilliSecond = UtilService.getTimeInLongString();
                       strTimeMii = timeInMilliSecond.toString();
@@ -208,7 +210,7 @@ angular.module('PaytmIM').factory('PaytmIM.CoreService', [ '$rootScope', 'PaytmI
                       mid = messageId.toString();
                       // Create read ack and send the corresoding jabber client/
                       // Note that since it is an delivery/ read ack , message ID containd -div- attributes
-                      var message2 = $msg({to: jid, "type": "chat", "id": mid}).c('read').t(midreadArray[i]).up().c('meta');
+                      var message2 = $msg({to: jid, "type": "chat", "id": mid}).c('read').t(midreadArray[i]).up().c('thread').t(threadId).up().c('meta');
                       connection.send(message2);
                       //console.log('Read Acknowledgement Sent: ' + message2);
                     }

@@ -130,7 +130,7 @@
                 }
                 scope.chatData.messages.push(message);
                 var jId = scope.chatData.agent + "@" + Globals.AppConfig.ChatHostURI;
-                scope.sendMessage(message, jId, timeInMilliSecond, mid);
+                scope.sendMessage(message, jId, timeInMilliSecond, mid, scope.thread);
                 scope.userMessage = "";
               }
             };
