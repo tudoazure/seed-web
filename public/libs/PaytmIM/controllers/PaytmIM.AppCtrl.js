@@ -340,7 +340,12 @@
                     thread.productId = productId;
                     thread.agent = agentId;
                     thread.threadId = threadId;
-                    thread.order = $scope.$storage.presentBargain ;//Object.keys($scope.threads).length;
+                    if($scope.threads){
+                        thread.order = Object.keys($scope.threads).length;
+                    }
+                    else{
+                        thread.order = 0;
+                    }
                     //console.log(Object.keys($scope.threads).length);
                     $scope.threads[threadId] = thread;
                     $scope.$storage.threads = $scope.threads;
