@@ -13,14 +13,14 @@
                             $scope.presentBargain++;
                         });
                     }
-                    // if(!$scope.presentBargain){
+                    // if(!$scope.$storage.presentBargain){
                     //     $scope.clearLocalStorage();
                     // }
                 };
 
                 $scope.init = function(){
                     $scope.initialize();
-                    if($scope.presentBargain){
+                    if($scope.$storage.presentBargain){
                         $scope.chatServer = $scope.$storage.chatServer;
                         $scope.chatServer.tid = UtilService.guid();
                         localStorage.tid = $scope.chatServer.tid;
@@ -34,7 +34,7 @@
                 $scope.clearLocalStorage = function(){
                     $localStorage.$reset();
                     localStorage.clear();
-                    $scope.presentBargain = 0;
+                    $scope.$storage.presentBargain = 0;
                     $scope.threads = {};
                     $scope.chatServer = {};
                     $scope.$storage.chatServer = {};
@@ -224,13 +224,13 @@
                             var agentId = Globals.AppConfig.AgentId;//response.data.agent;
                             var msg = UtilService.stringifyEmitUnicode($scope.parseProduct(bargainObj))//Globals.AppConfig.ProductMessage[productId];
                             $scope.sendInitialMessage(bargainObj.product.product_id, agentId, msg);
-                            $scope.presentBargain++;
+                            $scope.$storage.presentBargain++;
                             console.log("Bargain started for Product : ", bargainObj.product.product_id);
                             $rootScope.$broadcast('PaytmIM.BargainStarted', bargainObj.product.product_id);
                         }
                         else{
                             $rootScope.$broadcast('PaytmIM.NoMerchantAgent');
-                            if(!$scope.presentBargain){
+                            if(!$scope.$storage.presentBargain){
                                 $scope.disconnectXMPPConnection();
                             }
                         }
@@ -281,7 +281,7 @@
                     if(bargainObj && bargainObj.product && bargainObj.product.product_id){
                         var productId = bargainObj.product.product_id;
                         $scope.initialize();
-                        if($scope.presentBargain < Globals.AppConfig.MaxThreads){
+                        if($scope.$storage.presentBargain < Globals.AppConfig.MaxThreads){
                             var productPresent = false;
                             angular.forEach($scope.threads, function(value, index){
                                 if(value.productId == productId){
@@ -340,7 +340,7 @@
                     thread.productId = productId;
                     thread.agent = agentId;
                     thread.threadId = threadId;
-                    thread.order = $scope.presentBargain ;//Object.keys($scope.threads).length;
+                    thread.order = $scope.$storage.presentBargain ;//Object.keys($scope.threads).length;
                     //console.log(Object.keys($scope.threads).length);
                     $scope.threads[threadId] = thread;
                     $scope.$storage.threads = $scope.threads;
@@ -364,14 +364,14 @@
                         console.log("Bargain Ended for Product : ", $scope.getProductIdFromThread(threadId));
                         $scope.$storage.threads[threadId].status = "closed";
                         $rootScope.$broadcast('PaytmIM.BargainEnded', $scope.getProductIdFromThread(threadId));
-                        $scope.presentBargain = $scope.presentBargain - 1;
-                        console.log("ActiveBargains", $scope.presentBargain);
+                        $scope.$storage.presentBargain = $scope.$storage.presentBargain - 1;
+                        console.log("ActiveBargains", $scope.$storage.presentBargain);
                         delete $scope.threads[threadId];
                         delete $scope.$storage.threads[threadId];
                         $scope.$apply(function (){
                             $scope.$storage = $localStorage;
                         });
-                        if($scope.presentBargain){
+                        if($scope.$storage.presentBargain){
                             // delete $scope.threads[threadId];
                             // delete $scope.$storage.threads[threadId];
                             // $scope.$apply(function (){
@@ -391,7 +391,8 @@
                         $timeout(function (){
                             $scope.$storage = $localStorage;
                         });
-                        if(!$scope.presentBargain){
+                        if(!$scope.$storage.presentBargain){
+                            localStorage["ngStorage-threads"] = null;
                             $scope.disconnectXMPPConnection();
                         }
                     }
@@ -401,16 +402,16 @@
                     if($scope.$storage.threads[threadId]){
                         console.log("Bargain Ended for Product : ", $scope.getProductIdFromThread(threadId));
                         $rootScope.$broadcast('PaytmIM.BargainEnded', $scope.getProductIdFromThread(threadId));
-                        $scope.presentBargain = $scope.presentBargain - 1;
+                        $scope.$storage.presentBargain = $scope.$storage.presentBargain - 1;
                         $scope.$storage.threads[threadId].status = "closed";
                         $scope.threads[threadId] = $scope.$storage.threads[threadId];
                         $scope.$apply(function (){
                             //$scope.$storage = $localStorage;
                         });
-                        // if(!$scope.presentBargain){
+                        // if(!$scope.$storage.presentBargain){
                         //     $scope.disconnectXMPPConnection();
                         // }
-                        console.log("ActiveBargains", $scope.presentBargain);
+                        console.log("ActiveBargains", $scope.$storage.presentBargain);
                     }
                 })
 
