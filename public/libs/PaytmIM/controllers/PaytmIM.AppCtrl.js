@@ -37,6 +37,7 @@
                     $scope.presentBargain = 0;
                     $scope.threads = {};
                     $scope.chatServer = {};
+                    $scope.$storage.chatServer = {};
                     $scope.connection = null;
                     $timeout(function (){
                         $scope.$storage = $localStorage;
@@ -59,18 +60,33 @@
                         if($scope.$storage.chatServer && $scope.chatServer.tid != localStorage.tid ){
                             $scope.initialize();
                             $scope.chatSDK = null;
-                            if($scope.connection){
-                                $scope.connection.reattach($scope.$storage.chatServer.sid);
-                                $scope.chatSDK = CoreService.chatSDK($scope.connection);
+                            if($scope.presentBargain){
+                                if($scope.connection){
+                                    $scope.connection.reattach($scope.$storage.chatServer.sid);
+                                    $scope.chatSDK = CoreService.chatSDK($scope.connection);
+                                }
+                                $scope.chatServer = $scope.$storage.chatServer;
+                                if($scope.chatServer){
+                                    $scope.chatServer.tid = UtilService.guid();
+                                    localStorage.tid = $scope.chatServer.tid;
+                                    $scope.stropheAttach($scope.$storage.chatServer.jid, $scope.$storage.chatServer.sid, parseInt(localStorage.rid, 10), $scope.chatServer.tid);
+                                    $scope.$apply(function (){
+                                        $scope.$storage = $localStorage;
+                                    });
+                                }
                             }
-                            $scope.chatServer = $scope.$storage.chatServer;
-                            $scope.chatServer.tid = UtilService.guid();
-                            localStorage.tid = $scope.chatServer.tid;
-                            $scope.stropheAttach($scope.$storage.chatServer.jid, $scope.$storage.chatServer.sid, parseInt(localStorage.rid, 10), $scope.chatServer.tid);
-                            $scope.$apply(function (){
-                                $scope.$storage = $localStorage;
-                            });
+                            else if($scope.connection){
+                                try{
+                                    $scope.connection.options.sync = true; // Switch to using synchronous requests.
+                                    $scope.connection.flush();
+                                    $scope.connection.reset();
+                                }
+                                catch(e){
+
+                                }
+                            }
                         }
+
                         angular.element($window).unbind('focus');
                     });
                 });
@@ -87,6 +103,8 @@
                         device_detail : "none+details"
                     }, function success(response){
                         if(response && !response.status && response.data){
+                            $scope.chatServer = {};
+                            $scope.threads = {};
                             $scope.chatServer.tegoId = response.data['tego_id'];
                             $scope.chatServer.sessionId = response.data['session_id'];
                             $scope.chatServer.plustxtId = response.data['tego_id'] + "@" + Globals.AppConfig.ChatHostURI;
@@ -167,9 +185,17 @@
                 }
 
                 $scope.disconnectXMPPConnection = function() {
-                    $scope.connection.options.sync = true; // Switch to using synchronous requests.
-                    $scope.connection.flush();
-                    $scope.connection.disconnect();
+                    if($scope.connection){
+                        try{
+                            $scope.connection.options.sync = true; // Switch to using synchronous requests.
+                            $scope.connection.flush();
+                            //$scope.connection.reset();
+                            $scope.connection.disconnect();
+                        }
+                        catch(e){
+
+                        }
+                    }
                 };
 
                 $scope.connectedState = function(bargainObj){
@@ -204,6 +230,9 @@
                         }
                         else{
                             $rootScope.$broadcast('PaytmIM.NoMerchantAgent');
+                            if(!$scope.presentBargain){
+                                $scope.disconnectXMPPConnection();
+                            }
                         }
                     }, function failure(error){
                         $rootScope.$broadcast('PaytmIM.NoMerchantAgent');
@@ -311,7 +340,7 @@
                     thread.productId = productId;
                     thread.agent = agentId;
                     thread.threadId = threadId;
-                    thread.order = Object.keys($scope.threads).length;
+                    thread.order = $scope.presentBargain ;//Object.keys($scope.threads).length;
                     //console.log(Object.keys($scope.threads).length);
                     $scope.threads[threadId] = thread;
                     $scope.$storage.threads = $scope.threads;
@@ -333,15 +362,21 @@
                 $scope.$on('CloseUserChat', function(event, threadId){
                     if($scope.$storage.threads[threadId] && $scope.$storage.threads[threadId].status != "closed"){
                         console.log("Bargain Ended for Product : ", $scope.getProductIdFromThread(threadId));
+                        $scope.$storage.threads[threadId].status = "closed";
                         $rootScope.$broadcast('PaytmIM.BargainEnded', $scope.getProductIdFromThread(threadId));
                         $scope.presentBargain = $scope.presentBargain - 1;
                         console.log("ActiveBargains", $scope.presentBargain);
+                        delete $scope.threads[threadId];
+                        delete $scope.$storage.threads[threadId];
+                        $scope.$apply(function (){
+                            $scope.$storage = $localStorage;
+                        });
                         if($scope.presentBargain){
-                            delete $scope.threads[threadId];
-                            delete $scope.$storage.threads[threadId];
-                            $scope.$apply(function (){
-                                $scope.$storage = $localStorage;
-                            });
+                            // delete $scope.threads[threadId];
+                            // delete $scope.$storage.threads[threadId];
+                            // $scope.$apply(function (){
+                            //     $scope.$storage = $localStorage;
+                            // });
                         }
                         else{
                             $scope.disconnectXMPPConnection();
@@ -353,9 +388,9 @@
                     else if($scope.$storage.threads[threadId]){
                         delete $scope.threads[threadId];
                         delete $scope.$storage.threads[threadId];
-                        // $scope.$apply(function (){
-                        //     $scope.$storage = $localStorage;
-                        // });
+                        $timeout(function (){
+                            $scope.$storage = $localStorage;
+                        });
                         if(!$scope.presentBargain){
                             $scope.disconnectXMPPConnection();
                         }
