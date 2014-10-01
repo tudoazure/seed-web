@@ -52,7 +52,9 @@
                     angular.forEach($scope.$storage.threads, function(thread, i){
                         thread['isActiveChat'] = false;
                     })
-                    $scope.$storage.threads[activeThread].isActiveChat = true;
+                    if($scope.$storage.threads && $scope.$storage.threads[activeThread]){
+                        $scope.$storage.threads[activeThread].isActiveChat = true;
+                    }
                 })
 
                 angular.element($window).bind('blur', function(event) {
@@ -340,8 +342,8 @@
                     thread.productId = productId;
                     thread.agent = agentId;
                     thread.threadId = threadId;
-                    if($scope.threads){
-                        thread.order = Object.keys($scope.threads).length;
+                    if($scope.$storage && $scope.$storage.threads){
+                        thread.order = Object.keys($scope.$storage.threads).length;
                     }
                     else{
                         thread.order = 0;
