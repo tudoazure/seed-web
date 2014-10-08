@@ -36,7 +36,9 @@ angular.module('PaytmIM').factory('PaytmIM.CoreService', [ '$rootScope', 'PaytmI
             
             on_message: function(message) {
                 //console.log("CoreService @on_message called :");
-                var messageObj = xml2json.parser(message.outerHTML).message;
+                var x2js = new X2JS();
+                var messageObj = x2js.xml2json(message);
+                //var messageObj = xml2json.parser(message.outerHTML).message;
                 var threadId = messageObj.thread;
                 var body = messageObj.html;
                 if (!body){
@@ -62,11 +64,11 @@ angular.module('PaytmIM').factory('PaytmIM.CoreService', [ '$rootScope', 'PaytmI
                 }
                 //console.log("CoreService  @on_message - Message Text :", body);
                 var response = {};
-                response['full_jid'] = messageObj.from;
-                response['id'] = messageObj.id;
+                response['full_jid'] = messageObj._from;
+                response['id'] = messageObj._id;
                 response['threadId'] = threadId;
-                var jid = messageObj.from;
-                var messageID = messageObj.id;
+                var jid = messageObj._from;
+                var messageID = messageObj._id;
                 //response['composing'] = $(message).find('composing');
                 if(body){
                     response['body'] = body.trim();

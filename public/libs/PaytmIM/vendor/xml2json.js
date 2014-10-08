@@ -1,171 +1,237 @@
 /*
-xml2json v 1.1
-copyright 2005-2007 Thomas Frank
+ Copyright 2011 Abdulla Abdurakhmanov
+ Original sources are available at https://code.google.com/p/x2js/
 
-This program is free software under the terms of the 
-GNU General Public License version 2 as published by the Free 
-Software Foundation. It is distributed without any warranty.
-*/
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
 
-xml2json={
-	parser:function(xmlcode,ignoretags,debug){
-		if(!ignoretags){ignoretags=""};
-		xmlcode=xmlcode.replace(/\s*\/>/g,'/>');
-		xmlcode=xmlcode.replace(/<\?[^>]*>/g,"").replace(/<\![^>]*>/g,"");
-		if (!ignoretags.sort){ignoretags=ignoretags.split(",")};
-		var x=this.no_fast_endings(xmlcode);
-		x=this.attris_to_tags(x);
-		x=escape(x);
-		x=x.split("%3C").join("<").split("%3E").join(">").split("%3D").join("=").split("%22").join("\"");
-		for (var i=0;i<ignoretags.length;i++){
-			x=x.replace(new RegExp("<"+ignoretags[i]+">","g"),"*$**"+ignoretags[i]+"**$*");
-			x=x.replace(new RegExp("</"+ignoretags[i]+">","g"),"*$***"+ignoretags[i]+"**$*")
-		};
-		x='<JSONTAGWRAPPER>'+x+'</JSONTAGWRAPPER>';
-		this.xmlobject={};
-		var y=this.xml_to_object(x).jsontagwrapper;
-		if(debug){y=this.show_json_structure(y,debug)};
-		return y
-	},
-	xml_to_object:function(xmlcode){
-		var x=xmlcode.replace(/<\//g,"§");
-		x=x.split("<");
-		var y=[];
-		var level=0;
-		var opentags=[];
-		for (var i=1;i<x.length;i++){
-			var tagname=x[i].split(">")[0];
-			opentags.push(tagname);
-			level++
-			y.push(level+"<"+x[i].split("§")[0]);
-			while(x[i].indexOf("§"+opentags[opentags.length-1]+">")>=0){level--;opentags.pop()}
-		};
-		var oldniva=-1;
-		var objname="this.xmlobject";
-		for (var i=0;i<y.length;i++){
-			var preeval="";
-			var niva=y[i].split("<")[0];
-			var tagnamn=y[i].split("<")[1].split(">")[0];
-			tagnamn=tagnamn.toLowerCase();
-			var rest=y[i].split(">")[1];
-			if(niva<=oldniva){
-				var tabort=oldniva-niva+1;
-				for (var j=0;j<tabort;j++){objname=objname.substring(0,objname.lastIndexOf("."))}
-			};
-			objname+="."+tagnamn;
-			var pobject=objname.substring(0,objname.lastIndexOf("."));
-			if (eval("typeof "+pobject) != "object"){preeval+=pobject+"={value:"+pobject+"};\n"};
-			var objlast=objname.substring(objname.lastIndexOf(".")+1);
-			var already=false;
-			for (k in eval(pobject)){if(k==objlast){already=true}};
-			var onlywhites=true;
-			for(var s=0;s<rest.length;s+=3){
-				if(rest.charAt(s)!="%"){onlywhites=false}
-			};
-			if (rest!="" && !onlywhites){
-				if(rest/1!=rest){
-					rest="'"+rest.replace(/\'/g,"\\'")+"'";
-					rest=rest.replace(/\*\$\*\*\*/g,"</");
-					rest=rest.replace(/\*\$\*\*/g,"<");
-					rest=rest.replace(/\*\*\$\*/g,">")
-				}
-			} 
-			else {rest="{}"};
-			if(rest.charAt(0)=="'"){rest='unescape('+rest+')'};
-			if (already && !eval(objname+".sort")){preeval+=objname+"=["+objname+"];\n"};
-			var before="=";after="";
-			if (already){before=".push(";after=")"};
-			var toeval=preeval+objname+before+rest+after;
-			eval(toeval);
-			if(eval(objname+".sort")){objname+="["+eval(objname+".length-1")+"]"};
-			oldniva=niva
-		};
-		return this.xmlobject
-	},
-	show_json_structure:function(obj,debug,l){
-		var x='';
-		if (obj.sort){x+="[\n"} else {x+="{\n"};
-		for (var i in obj){
-			if (!obj.sort){x+=i+":"};
-			if (typeof obj[i] == "object"){
-				x+=this.show_json_structure(obj[i],false,1)
-			}
-			else {
-				if(typeof obj[i]=="function"){
-					var v=obj[i]+"";
-					//v=v.replace(/\t/g,"");
-					x+=v
-				}
-				else if(typeof obj[i]!="string"){x+=obj[i]+",\n"}
-				else {x+="'"+obj[i].replace(/\'/g,"\\'").replace(/\n/g,"\\n").replace(/\t/g,"\\t").replace(/\r/g,"\\r")+"',\n"}
-			}
-		};
-		if (obj.sort){x+="],\n"} else {x+="},\n"};
-		if (!l){
-			x=x.substring(0,x.lastIndexOf(","));
-			x=x.replace(new RegExp(",\n}","g"),"\n}");
-			x=x.replace(new RegExp(",\n]","g"),"\n]");
-			var y=x.split("\n");x="";
-			var lvl=0;
-			for (var i=0;i<y.length;i++){
-				if(y[i].indexOf("}")>=0 || y[i].indexOf("]")>=0){lvl--};
-				tabs="";for(var j=0;j<lvl;j++){tabs+="\t"};
-				x+=tabs+y[i]+"\n";
-				if(y[i].indexOf("{")>=0 || y[i].indexOf("[")>=0){lvl++}
-			};
-			if(debug=="html"){
-				x=x.replace(/</g,"&lt;").replace(/>/g,"&gt;");
-				x=x.replace(/\n/g,"<BR>").replace(/\t/g,"&nbsp;&nbsp;&nbsp;&nbsp;")
-			};
-			if (debug=="compact"){x=x.replace(/\n/g,"").replace(/\t/g,"")}
-		};
-		return x
-	},
-	no_fast_endings:function(x){
-		x=x.split("/>");
-		for (var i=1;i<x.length;i++){
-			var t=x[i-1].substring(x[i-1].lastIndexOf("<")+1).split(" ")[0];
-			x[i]="></"+t+">"+x[i]
-		}	;
-		x=x.join("");
-		return x
-	},
-	attris_to_tags: function(x){
-		var d=' ="\''.split("");
-		x=x.split(">");
-		for (var i=0;i<x.length;i++){
-			var temp=x[i].split("<");
-			for (var r=0;r<4;r++){temp[0]=temp[0].replace(new RegExp(d[r],"g"),"_jsonconvtemp"+r+"_")};
-			if(temp[1]){
-				temp[1]=temp[1].replace(/'/g,'"');
-				temp[1]=temp[1].split('"');
-				for (var j=1;j<temp[1].length;j+=2){
-					for (var r=0;r<4;r++){temp[1][j]=temp[1][j].replace(new RegExp(d[r],"g"),"_jsonconvtemp"+r+"_")}
-				};
-				temp[1]=temp[1].join('"')
-			};
-			x[i]=temp.join("<")
-		};
-		x=x.join(">");
-		x=x.replace(/ ([^=]*)=([^ |>]*)/g,"><$1>$2</$1");
-		x=x.replace(/>"/g,">").replace(/"</g,"<");
-		for (var r=0;r<4;r++){x=x.replace(new RegExp("_jsonconvtemp"+r+"_","g"),d[r])}	;
-		return x
-	}
-};
+ http://www.apache.org/licenses/LICENSE-2.0
 
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ */
 
-if(!Array.prototype.push){
-	Array.prototype.push=function(x){
-		this[this.length]=x;
-		return true
-	}
-};
+function X2JS() {
 
-if (!Array.prototype.pop){
-	Array.prototype.pop=function(){
-  		var response = this[this.length-1];
-  		this.length--;
-  		return response
-	}
-};
+        var DOMNodeTypes = {
+                ELEMENT_NODE : 1,
+                TEXT_NODE    : 3,
+                DOCUMENT_NODE : 9
+        }
+        
+        function getNodeLocalName( node ) {
+                var nodeLocalName = node.localName;                     
+                if(nodeLocalName == null) // Yeah, this is IE!! 
+                        nodeLocalName = node.baseName;
+                if(nodeLocalName == null || nodeLocalName=="") // =="" is IE too
+                        nodeLocalName = node.nodeName;
+                return nodeLocalName;
+        }
+        
+        function getNodePrefix(node) {
+                return node.prefix;
+        }
+
+        function parseDOMChildren( node ) {
+                if(node.nodeType == DOMNodeTypes.DOCUMENT_NODE) {
+                        var result = new Object;
+                        var child = node.firstChild; 
+                        var childName = getNodeLocalName(child);
+                        result[childName] = parseDOMChildren(child);
+                        return result;
+                }
+                else
+                if(node.nodeType == DOMNodeTypes.ELEMENT_NODE) {
+                        var result = new Object;
+                        result.__cnt=0;
+                        
+                        var nodeChildren = node.childNodes;
+                        
+                        // Children nodes
+                        for(var cidx=0; cidx <nodeChildren.length; cidx++) {
+                                var child = nodeChildren.item(cidx); // nodeChildren[cidx];
+                                var childName = getNodeLocalName(child);
+                                
+                                result.__cnt++;
+                                if(result[childName] == null) {
+                                        result[childName] = parseDOMChildren(child);
+                                        result[childName+"_asArray"] = new Array(1);
+                                        result[childName+"_asArray"][0] = result[childName];
+                                }
+                                else {
+                                        if(result[childName] != null) {
+                                                if( !(result[childName] instanceof Array)) {
+                                                        var tmpObj = result[childName];
+                                                        result[childName] = new Array(nodeChildren.length);
+                                                        result[childName][0] = tmpObj;
+                                                        
+                                                        result[childName+"_asArray"] = result[childName];
+                                                }
+                                        }
+                                        var aridx = 0;
+                                        while(result[childName][aridx]!=null) aridx++;
+                                        (result[childName])[aridx] = parseDOMChildren(child);
+                                }                       
+                        }
+                        
+                        // Attributes
+                        for(var aidx=0; aidx <node.attributes.length; aidx++) {
+                                var attr = node.attributes.item(aidx); // [aidx];
+                                result.__cnt++;
+                                result["_"+attr.name]=attr.value;
+                        }
+                        
+                        // Node namespace prefix
+                        var nodePrefix = getNodePrefix(node);
+                        if(nodePrefix!=null && nodePrefix!="") {
+                                result.__cnt++;
+                                result.__prefix=nodePrefix;
+                        }
+                        
+                        if( result.__cnt == 1 && result["#text"]!=null  ) {
+                                result = result["#text"];
+                        } 
+                        
+                        if(result["#text"]!=null) {
+                                result.__text = result["#text"];
+                                result["#text"] = null;
+                                result.toString = function() {
+                                        return this.__text;
+                                }
+                        }
+                        return result;
+                }
+                else
+                if(node.nodeType == DOMNodeTypes.TEXT_NODE) {
+                        return node.nodeValue;
+                }       
+        }
+        
+        function startTag(jsonObj, element, attrList, closed) {
+                var resultStr = "<"+ (jsonObj.__prefix!=null? (jsonObj.__prefix+":"):"") + element;
+                if(attrList!=null) {
+                        for(var aidx = 0; aidx < attrList.length; aidx++) {
+                                var attrName = attrList[aidx];
+                                var attrVal = jsonObj[attrName];
+                                resultStr+=" "+attrName.substr(1)+"='"+attrVal+"'";
+                        }
+                }
+                if(!closed)
+                        resultStr+=">";
+                else
+                        resultStr+="/>";
+                return resultStr;
+        }
+        
+        function endTag(jsonObj,elementName) {
+                return "</"+ (jsonObj.__prefix!=null? (jsonObj.__prefix+":"):"")+elementName+">";
+        }
+        
+        function endsWith(str, suffix) {
+            return str.indexOf(suffix, str.length - suffix.length) !== -1;
+        }
+        
+        function parseJSONTextObject ( jsonTxtObj ) {
+                var result ="";
+                if(jsonTxtObj.__text!=null) {
+                        result+=jsonTxtObj.__text;
+                }
+                else {
+                        result+=jsonTxtObj;
+                }
+                return result;
+        }
+        
+        function parseJSONObject ( jsonObj ) {
+                var result = "";        
+                
+                for( var it in jsonObj  ) {
+                                                
+                        if(endsWith(it.toString(),("_asArray")) || it.toString()[0]=="_")
+                                continue;
+                        
+                        var subObj = jsonObj[it];                                               
+                        
+                        var attrList = [];
+                        for( var ait in subObj  ) {
+                                if(ait.toString()[0]=="_" && ait.toString()[1]!="_") {
+                                        attrList.push(ait);
+                                }
+                        }
+                        
+                        if(subObj!=null && subObj instanceof Object && subObj.__text==null) {
+                                
+                                if(subObj instanceof Array) {
+                                        var arrayOfObjects = true;
+                                        if(subObj.length > 0) {
+                                                arrayOfObjects = subObj[0] instanceof Object;
+                                        }
+                                        else {
+                                                result+=startTag(subObj, it, attrList, true);
+                                        }
+                                                
+                                        for(var arIdx = 0; arIdx < subObj.length; arIdx++) {                                            
+                                                if(arrayOfObjects)
+                                                        result+=parseJSONObject(subObj[arIdx]);
+                                                else {
+                                                        result+=startTag(subObj, it, attrList, false);
+                                                        result+=parseJSONTextObject(subObj[arIdx]);
+                                                        result+=endTag(subObj,it);
+                                                }
+                                        }
+                                }
+                                else {
+                                        result+=startTag(subObj, it, attrList, false);
+                                        result+=parseJSONObject(subObj);
+                                        result+=endTag(subObj,it);
+                                }
+                        }
+                        else {
+                                result+=startTag(subObj, it, attrList, false);
+                                result+=parseJSONTextObject(subObj);
+                                result+=endTag(subObj,it);
+                        }                                               
+                }
+                
+                return result;
+        }
+        
+        this.parseXmlString = function(xmlDocStr) {
+                var xmlDoc;
+                if (window.DOMParser) {
+                        var parser=new DOMParser();                     
+                        xmlDoc = parser.parseFromString( xmlDocStr, "text/xml" );
+                }
+                else {
+                        // IE :(
+                        xmlDoc=new ActiveXObject("Microsoft.XMLDOM");
+                        xmlDoc.async="false";
+                        xmlDoc.loadXML(xmlDocStr);
+                }
+                return xmlDoc;
+        }
+
+        this.xml2json = function (xmlDoc) {
+                return parseDOMChildren ( xmlDoc );
+        }
+        
+        this.xml_str2json = function (xmlDocStr) {
+                var xmlDoc = this.parseXmlString(xmlDocStr);    
+                return this.xml2json(xmlDoc);
+        }
+
+        this.json2xml_str = function (jsonObj) {
+                return parseJSONObject ( jsonObj );
+        }
+
+        this.json2xml = function (jsonObj) {
+                var xmlDocStr = this.json2xml_str (jsonObj);
+                return this.parseXmlString(xmlDocStr);
+        }
+}
+
+var x2js = new X2JS();
